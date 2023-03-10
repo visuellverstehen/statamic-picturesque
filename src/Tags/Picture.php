@@ -11,10 +11,10 @@ class Picture extends Tags
 {
     protected static $aliases = ['picturesque'];
     
-    private $sourceAsset;
     private $glide;
     private $glideSource;
     private $isGlideSupportedFiletype;
+    private $sourceAsset;
 
     private $data = [
         'sources' => [],
@@ -77,7 +77,7 @@ class Picture extends Tags
     /**
      * Prepares all data required for generating a <picture> tag.
      */
-    private function output($asset)
+    protected function output($asset)
     {
         if (! $asset = Asset::find($asset)) {
             return '';
@@ -109,7 +109,7 @@ class Picture extends Tags
     /**
      * Generates a <picture> tag.
      */
-    private function outputAsHtml()
+    protected function outputAsHtml()
     {
         $output = '<picture>';
 
@@ -142,7 +142,7 @@ class Picture extends Tags
     /**
      * Returns the picture tag data as JSON.
      */
-    private function outputAsJson()
+    protected function outputAsJson()
     {
         return json_encode($this->data);
     }
