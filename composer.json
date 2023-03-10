@@ -1,0 +1,43 @@
+{
+    "name": "visuellverstehen/statamic-picturesque",
+    "description": "A Statamic tag for building HTML-only responsive images.",
+    "keywords": [
+        "statamic",
+        "v3",
+        "addon"
+    ],
+    "license": "MIT",
+    "type": "statamic-addon",
+    "autoload": {
+        "psr-4": {
+            "VV\\Picturesque\\": "src"
+        }
+    },
+    "authors": [
+        {
+            "name": "visuellverstehen"
+        }
+    ],
+    "support": {
+        "email": "hello@visuellverstehen.de"
+    },
+    "extra": {
+        "statamic": {
+            "name": "Statamic Picturesque",
+            "description": "A Statamic tag for building HTML-only responsive images."
+        },
+        "laravel": {
+            "providers": [
+                "VV\\Picturesque\\ServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "statamic/cms": "^3.4"
+    },
+    "config": {
+        "allow-plugins": {
+            "pixelfear/composer-dist-plugin": true
+        }
+    }
+}
