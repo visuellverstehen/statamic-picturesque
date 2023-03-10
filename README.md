@@ -12,7 +12,7 @@ composer require visuellverstehen/statamic-picturesque
 
 ## How to Use
 
-The tag is available as `{{ picture }}` or `{{ picturesque }}` and supports three different use cases:
+The tag is available as `{{ picture }}` or `{{ picturesque }}` and supports different ways of using it:
 
 ### Non-breakpoint based image with `size` attribute
 
@@ -87,7 +87,11 @@ Takes width with, ratio and size through breakpoint-specific attributes, with va
 </picture>
 ```
 
-### Additional information for all three ways
+### Additional information for all ways
+
+#### Spaces in attributes  
+Feel free to use spaces within the attributes to make it more readable:  
+`{{ picture:img default="300 | 1.5:1 | 100vw" md="1024 | 1.6:1 | 80vw" lg="1280 | 2:1 | 960px" }}`
 
 #### Image source  
 The image source can be supplied in different ways:  
@@ -101,25 +105,47 @@ If you're using the first option, be careful with the JSON mode ([see below](#js
 You can also supply an asset path:
 `{{ picture src="/assets/my-image.jpg" size="300|1.5:1" }}`   
 
+#### Cropping, ratio and size
+If you want to keep the original image ratio (and don't crop at all), use `auto` instead of a ratio:  
+`{{ picture:img default="300 | auto | 100vw" […] }}`
+
+Instead of using a ratio to crop an image you can also supply a width and height:  
+`{{ picture:img size="300x100" md="600x400" }}`
+If you want to use this way in combination with the `sizes` attribute, simply use `auto` as the second parameter:  
+`{{ picture:img size="300x100 | auto | 100vw" md="600x400 | auto | 80vw" }}`
+
+The tag supports ratios as `1.5:1` or `1.5/1`, so use whichever way you prefer.
+
 #### Breakpoints
 
 The breakpoints for the media attributes can be configured ([see below](#configuration)) and use the [tailwindcss breakpoints](https://tailwindcss.com/docs/responsive-design) as default.
-
-#### Spaces in attributes  
-Feel free to use spaces within the attributes to make it more readable:  
-`{{ picture:img default="300 | 1.5:1 | 100vw" md="1024 | 1.6:1 | 80vw" lg="1280 | 2:1 | 960px" }}`
-
-#### Ratios  
-If you don't want to apply any cropping but want to keep the original image ratio, use `auto` instead:  
-`{{ picture:img default="300 | auto | 100vw" […] }}`
-
-The tag supports ratios as `1.5:1` or `1.5/1`, so use whichever way you prefer.
 
 #### JSON mode
 If you don't want to get a precompiled HTML string but rather have all the data as JSON for passing it on (e. g. to a Vue component), you can tell the tag to do just that:  
 `{{ picture:json :src="img" size="300|1.5:1" }}`   
 or  
 `{{ picture:img output="json" size="300|1.5:1" }}`   
+
+Results in:
+```JSON
+{"sources":{"default":{"type":"image\/webp","srcset":"[img-url]?fm=webp&fit=crop&w=300&h=200&s=[…] 1x,[img-url]?fm=webp&fit=crop&w=600&h=400&s=[…] 2x"}},"img":{"alt":"","class":"","src":"[img-url]?w=300&fit=crop&s=[…]","loading":"lazy"}}
+```
+
+### Additional `img` element attributes
+
+To pass on some additional data to the generated `img` element, the following attributes are available:
+
+#### Alt text
+The tag by default checks the source asset for an alt text. You can overwrite the alt text like this:  
+`{{ picture:img size="300x200" alt='I wish everyone would care about alt texts.' }}`   
+
+#### CSS classes
+To attach css classes to the img element, use this:  
+`{{ picture:img size="300x200" class='w-full object-cover' }}`   
+
+#### Lazy-Loading
+You can disable lazy loading (which is activated by default) like this:
+`{{ picture:img size="300x200" lazy='false' }}`   
 
 ## Configuration
 
