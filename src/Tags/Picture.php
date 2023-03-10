@@ -23,23 +23,6 @@ class Picture extends Tags
 
     private $mode = 'html';
 
-    // CONFIG
-    private $breakpoints = [
-        'default' => 0,
-        'sm' => 640,
-        'md' => 768,
-        'lg' => 1024,
-        'xl' => 1280,
-        '2xl' => 1536,
-    ];
-
-    private $sizeMultipliers = [1, 1.5, 2];
-
-    private $dpr = [1, 2];
-
-    private $supportedFiletypes = ['jpg', 'jpeg', 'png', 'webp'];
-    // ENDCONFIG
-
     /**
      * {{ picture src="[src]" }}.
      *
@@ -118,7 +101,7 @@ class Picture extends Tags
              */
 
             // breakpoint-based sources
-            if ($this->params->get(array_keys($this->breakpoints))) {
+            if ($this->params->get(array_keys(config('picturesque.breakpoints')))) {
                 $this->data['sources'] = $this->generateBreakpointSourceTags();
             }
 
@@ -248,7 +231,7 @@ class Picture extends Tags
 
         // media
         if ($breakpoint) {
-            $source['media'] = "(min-width: {$this->breakpoints[$breakpoint]}px)";
+            $source['media'] = "(min-width: ".config('picturesque.breakpoints')[$breakpoint]."px)";
         }
 
         // srcset
@@ -264,7 +247,7 @@ class Picture extends Tags
 
     private function generateBreakpointSourceTags(): array
     {
-        return collect($this->breakpoints)
+        return collect(config('picturesque.breakpoints'))
             ->sortDesc()
             ->map(function ($px, $breakpoint) {
                 if ($this->params->get($breakpoint)) {
@@ -296,7 +279,7 @@ class Picture extends Tags
         foreach ($sourceData['srcset'] as $source) {
             // with sizes
             if ($sourceData['sizes']) {
-                foreach ($this->sizeMultipliers as $index => $multiplier) {
+                foreach (config('picturesque.size_multipliers') as $multiplier) {
                     $w = ((float) $source['width']) * $multiplier;
 
                     // make sure to not generate a size twice
@@ -318,7 +301,7 @@ class Picture extends Tags
             }
             // with dpr
             else {
-                foreach ($this->dpr as $dpr) {
+                foreach (config('picturesque.dpr') as $dpr) {
                     $w = ((float) $source['width']) * $dpr;
 
                     $glideOptions['width'] = $w;
@@ -465,6 +448,6 @@ class Picture extends Tags
         }
         $filetype = strtolower(explode('/', $this->sourceAsset->meta()['mime_type'])[1]);
 
-        return in_array($filetype, $this->supportedFiletypes);
+        return in_array($filetype, config('picturesque.supported_filetypes'));
     }
 }

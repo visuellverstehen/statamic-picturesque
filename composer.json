@@ -33,6 +33,7 @@
         }
     },
     "require": {
+        "php": "^8.0",
         "statamic/cms": "^3.4"
     },
     "config": {
