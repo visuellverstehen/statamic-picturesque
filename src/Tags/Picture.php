@@ -86,20 +86,6 @@ class Picture extends Tags
         $this->setupGlide($asset);
 
         if ($this->isGlideSupportedFiletype) {
-            /*
-             * 3 supported cases:
-             *
-             * a)   non-breakpoint based image with `size` attribute
-             *      e.g. {{ picture:img size="300|1.8:1" }}
-             *      this can also be used as fallback for breakpoints (the `zero breakpoint`)
-             * b)   breakpoint based image without sizes
-             *      uses dpr-based image resizing (… 1x, … 2x)
-             *      e.g. {{ picture:img default="800|1:1.5" md="1024|1,5:1" lg="1280|2:1" }}
-             * c)   breakpoint based image with sizes
-             *      uses specific size information for resizing
-             *      e.g. {{ picture:img default="800|1:1.5|100vw" [etc.] }}
-             */
-
             // breakpoint-based sources
             if ($this->params->get(array_keys(config('picturesque.breakpoints')))) {
                 $this->data['sources'] = $this->generateBreakpointSourceTags();
