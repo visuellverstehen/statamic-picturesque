@@ -251,7 +251,6 @@ class Picture extends Tags
     private function generateSrcsetAttribute(array $sourceData, string $format, $glideOptions = []): string
     {
         $sources = [];
-        $generatedWidths = [];
 
         if (! array_key_exists('format', $glideOptions)) {
             $glideOptions['format'] = $format;
@@ -265,40 +264,37 @@ class Picture extends Tags
         foreach ($sourceData['srcset'] as $source) {
             // with sizes
             if ($sourceData['sizes']) {
-                foreach (config('picturesque.size_multipliers') as $multiplier) {
-                    $w = ((float) $source['width']) * $multiplier;
-
-                    // make sure to not generate a size twice
-                    // TODO does not factor in height! -> unique on array when preparing?
-                    if (in_array($w, $generatedWidths)) {
-                        continue;
-                    }
-                    $generatedWidths[] = $w;
-
-                    $glideOptions['width'] = $w;
-
-                    // set image height, if available
-                    if (array_key_exists('height', $source)) {
-                        $glideOptions['height'] = ((float) $source['height']) * $multiplier;
-                    }
-
-                    $sources[]= "{$this->generateGlideUrl($glideOptions)} {$w}w";
-                }
+                $sources = array_merge($sources, collect(config('picturesque.size_multipliers'))
+                    ->map(function ($multiplier) use ($source) {
+                        return [
+                            'width' => ((float) $source['width']) * $multiplier,
+                            'height' => ((float) $source['height']) * $multiplier,
+                        ];
+                    })
+                    ->unique()
+                    ->transform(function ($sizes) use ($glideOptions) {
+                        $options = array_merge($glideOptions, $sizes);
+                        return "{$this->generateGlideUrl($options)} {$sizes['width']}w";
+                    })
+                    ->toArray()
+                );
             }
             // with dpr
             else {
-                foreach (config('picturesque.dpr') as $dpr) {
-                    $w = ((float) $source['width']) * $dpr;
-
-                    $glideOptions['width'] = $w;
-
-                    // set image height, if available
-                    if (array_key_exists('height', $source)) {
-                        $glideOptions['height'] = ((float) $source['height']) * $dpr;
-                    }
-
-                    $sources[] = "{$this->generateGlideUrl($glideOptions)} {$dpr}x";
-                }
+                $sources = array_merge($sources, collect(config('picturesque.dpr'))
+                    ->mapWithKeys(function ($dpr) use ($source) {
+                        return [$dpr => [
+                            'width' => ((float) $source['width']) * $dpr,
+                            'height' => ((float) $source['height']) * $dpr,
+                        ]];
+                    })
+                    ->unique()
+                    ->transform(function ($sizes, $dpr) use ($glideOptions) {
+                        $options = array_merge($glideOptions, $sizes);
+                        return "{$this->generateGlideUrl($options)} {$dpr}x";
+                    })
+                    ->toArray()
+                );
             }
         }
 
