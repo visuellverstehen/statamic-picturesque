@@ -194,11 +194,17 @@ class Picture extends Tags
         } else {
             $img['src'] = $this->generateGlideUrl(['width' => $this->getSmallestSrc(), 'fit' => 'crop_focal']);
         }
-
-        // TODO add config for default value
-        $img['loading'] = 'lazy';
-        if ($this->params->has('lazy') && $this->params->get('lazy') == false) {
-            $img['loading'] = null;
+        
+        // lazy loading
+        if ($this->params->has('lazy')) {
+            if ($this->params->get('lazy') != false) {
+                $img['loading'] = 'lazy';
+            }
+        }
+        else {
+            if (config('picturesque.lazyloading')) {
+                $img['loading'] = 'lazy';
+            }
         }
 
         return $img;

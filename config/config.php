@@ -66,4 +66,16 @@ return [
     
     'min_width' => 300,
     
+    /*
+    |--------------------------------------------------------------------------
+    | Lazy loading default
+    |--------------------------------------------------------------------------
+    |
+    | Should `loading="lazy"` be used by default or not?
+    | You can always overwrite it by setting `lazy='false'` in the tag.
+    |
+    */
+    
+    'lazyloading' => true,
+    
 ];
