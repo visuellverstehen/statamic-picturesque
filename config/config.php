@@ -55,4 +55,15 @@ return [
     
     'supported_filetypes' => ['jpg', 'jpeg', 'png', 'webp'],
     
+    /*
+    |--------------------------------------------------------------------------
+    | Minimum image width
+    |--------------------------------------------------------------------------
+    |
+    | Defines the smallest width to use for image processing in px (int).
+    |
+    */
+    
+    'min_width' => 300,
+    
 ];

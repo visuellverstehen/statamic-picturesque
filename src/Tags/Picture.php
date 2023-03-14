@@ -344,9 +344,9 @@ class Picture extends Tags
         return (float) $h / $w;
     }
 
-    private function getSmallestSrc($srcset = null)
+    private function getSmallestSrc(): int
     {
-        return '300'; // TODO look for either sizes or smallest breakpoint
+        return config('picturesque.min_width');
     }
 
     /**
