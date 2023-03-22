@@ -259,7 +259,7 @@ class Picturesque
         return $img;
     }
     
-    private function makeSource(array|string $sourceData, string $format = 'webp', string $breakpoint = null): array
+    private function makeSource(array|string $sourceData, string|null $format = null, string $breakpoint = null): array
     {
         if (! is_array($sourceData)) {
             $sourceData = $this->parseParam($sourceData);
@@ -268,6 +268,7 @@ class Picturesque
         $source = [];
         
         // type
+        $format = $format ? $format : config('picturesque.default_filetype');
         $source['type'] = "image/{$format}";
         
         // media
@@ -294,7 +295,7 @@ class Picturesque
                 if ($this->breakpoints->get($breakpoint)) {
                     return $this->makeSource(
                         $this->breakpoints->get($breakpoint),
-                        'webp', // TODO config? option?
+                        config('picturesque.default_filetype'),
                         (string) $breakpoint
                     );
                 }
