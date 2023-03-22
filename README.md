@@ -176,6 +176,31 @@ You can disable lazy loading (which is activated by default) like this:
 
 A setting in the config ([see below](#configuration)) allows you to adjust the default behaviour.
 
+### Using the base class
+
+If you want to use the logic of the tag outside of an Antlers template you can simple use the `Picturesque` base class:
+
+```php
+use VV\Picturesque\Picturesque;
+
+// ...
+
+public function makePicture(string $imageUrl)
+{   
+    return (new Picturesque($imageUrl))
+        ->default('300 | 1.5:1')
+        ->breakpoint('md', '1024 | 1.6:1')
+        ->breakpoint('lg', '1280 | 2:1 | 960px')
+        ->alt('I wish everyone would care about alt texts.')
+        ->class('w-full object-cover')
+        ->lazy(true)
+        ->generate() // you always have to call this!
+        ->html(); // or ->json()
+}
+```
+
+Please be aware that the image currently has to be a Statamic asset and must be findable through the Asset facade (`Statamic\Facades\Asset::find($url)`).
+
 ## Configuration
 
 The addon provides several configuration options through it's `config/picturesque.php` file. Check out the descriptions in there. All settings have sensible default options, so in the best-cast-scenario you don't have to configure anything.
