@@ -8,6 +8,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Define supported breakpoints for generating breakpoint-based sources.
+    | Note that the `default` key is mandatory.
     |
     */
     
@@ -25,8 +26,9 @@ return [
     | Size multipliers
     |--------------------------------------------------------------------------
     |
-    | Define in which multiples of the requested image size should sources be 
-    | generated when using the `sizes` attribute.
+    | Define in which multiples of the requested image size sources should be 
+    | generated. When using the default (1, 1.5, 2) and requesting an image in
+    | 300px the tag generates sizes in 300px, 450px, 600px.
     |
     */
     
