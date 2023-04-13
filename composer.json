@@ -1,11 +1,7 @@
 {
     "name": "visuellverstehen/statamic-picturesque",
     "description": "A Statamic tag for building HTML-only responsive images.",
-    "keywords": [
-        "statamic",
-        "v3",
-        "addon"
-    ],
+    "keywords": [ "statamic", "addon", "responsive", "image", "picture", "glide", "v3", "v4" ],
     "license": "MIT",
     "type": "statamic-addon",
     "autoload": {
@@ -34,7 +30,7 @@
     },
     "require": {
         "php": "^8.0",
-        "statamic/cms": "^3.4"
+        "statamic/cms": "^3.4 || ^4.0"
     },
     "config": {
         "allow-plugins": {
