@@ -20,9 +20,9 @@ The tag is available as `{{ picture }}` or `{{ picturesque }}` and supports diff
 
 Creates a picture element using a single source with a resized/cropped image for all defined DPRs.
 
-e. g. `{{ picture:img size="300|1.5:1" }}`
+e. g. `{{ picture:img size="300x200" }}` or `{{ picture:img size="300|1.5:1" }}`
 
-Takes width and ratio through the `size` attribute, with values separated by a pipe. Results in: 
+Takes width and (optionally) ratio through the `size` attribute, with values separated by a pipe. Results in: 
 
 ```HTML
 <picture>
@@ -170,7 +170,7 @@ The tag by default checks the source asset for an alt text. You can overwrite th
 To attach css classes to the img element, use this:  
 `{{ picture:img size="300x200" class="w-full object-cover" }}`   
 
-#### Lazy-Loading
+#### Lazy-loading
 You can disable lazy loading (which is activated by default) like this:
 `{{ picture:img size="300x200" lazy="false" }}`   
 
