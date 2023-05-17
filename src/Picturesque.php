@@ -198,15 +198,11 @@ class Picturesque
     
     private function makeAlt(): string
     {
-        if ($alt = $this->options->get('alt')) {
-            return $alt;
+        if (($alt = $this->options->get('alt')) || 
+            ($alt = $this->asset->data()->get('alt'))) {
+            return strip_tags($alt);
         }
-    
-        $alt = $this->asset->data()->get('alt');
-        if (! empty($alt)) {
-            return $alt;
-        }
-    
+        
         return '';
     }
     
