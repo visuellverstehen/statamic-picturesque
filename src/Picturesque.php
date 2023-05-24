@@ -236,7 +236,7 @@ class Picturesque
         ];
     
         if (! $this->isGlideSupportedFiletype()) {
-            $img['src'] = $this->sourceAsset->url();
+            $img['src'] = $this->asset->url();
         } else {
             $img['src'] = $this->makeGlideUrl(['width' => $this->smallestSrc(), 'fit' => 'crop_focal']);
         }
