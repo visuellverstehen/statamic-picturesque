@@ -91,4 +91,16 @@ return [
     
     'lazyloading' => true,
     
+    /*
+    |--------------------------------------------------------------------------
+    | Full stop in alt tags
+    |--------------------------------------------------------------------------
+    |
+    | Setting this to true ensures that the alt text always ends with a 
+    | full stop.
+    |
+    */
+    
+    'alt_fullstop' => false,
+    
 ];

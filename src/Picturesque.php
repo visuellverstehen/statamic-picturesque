@@ -8,6 +8,7 @@ use Statamic\Facades\Asset as AssetFacade;
 use Statamic\Tags\Context;
 use Statamic\Tags\Glide;
 use Statamic\Tags\Parameters;
+use Stringy\StaticStringy as Stringy;
 
 class Picturesque
 {
@@ -200,7 +201,13 @@ class Picturesque
     {
         if (($alt = $this->options->get('alt')) || 
             ($alt = $this->asset->data()->get('alt'))) {
-            return strip_tags($alt);
+            $alt = strip_tags($alt);
+            
+            if (config('picturesque.alt_fullstop')) {
+                $alt = Stringy::ensureRight($alt, '.');
+            }
+                
+            return $alt;
         }
         
         return '';
