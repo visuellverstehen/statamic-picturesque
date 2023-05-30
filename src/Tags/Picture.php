@@ -65,8 +65,10 @@ class Picture extends Tags
 
     protected function output($asset)
     {
-        if (! $asset = Asset::find($asset)) {
-            return '';
+        if (! is_a($asset, 'Statamic\Contracts\Assets\Asset')) {
+            if (! $asset = Asset::find($asset)) {
+                return '';
+            }
         }
         
         $picture = new Picturesque($asset);
