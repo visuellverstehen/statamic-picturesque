@@ -128,6 +128,13 @@ If you want to use `width x height` as well as the `sizes` attribute, simply use
 
 The tag supports ratios as `1.5:1` or `1.5/1`, so use whichever way you prefer.
 
+#### Image orientation
+
+By default Picturesque assumes you're working with landscape images. If you have a portrait image, you can change this behaviour by adding the `orientation` (or short `ori`, for all you impatient folks) parameter:  
+`{{ picture:img size="300 | 2:1" orientation="portrait" }}`
+
+All calculations for ratio etc. then use the first number as the height and calculate the width from it. If you pass two sizes (`300x100`) while using portrait orientation, the first size is considered as height and the second one as width.
+
 #### Breakpoints
 
 The breakpoints for the media attributes can be configured ([see below](#configuration)) and use the [tailwindcss breakpoints](https://tailwindcss.com/docs/responsive-design) as default.

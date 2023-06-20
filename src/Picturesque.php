@@ -19,6 +19,7 @@ class Picturesque
     private $glideSource;
     private $supportedFiletype;
     private $options;
+    private $orientation;
     
     public function __construct(Asset|string $asset)
     {
@@ -34,6 +35,7 @@ class Picturesque
         }
         
         $this->breakpoints = collect();
+        $this->orientation = 'landscape';
         
         $this->data = [
             'sources' => [],
@@ -158,6 +160,17 @@ class Picturesque
     public function lazy(bool $lazy): self
     {
         $this->options->put('lazy', $lazy);
+        
+        return $this;
+    }
+    
+    public function orientation(string $orientation): self
+    {   
+        if ($orientation !== 'landscape' && $orientation !== 'portrait') {
+            $orientation = 'landscape';
+        }
+        
+        $this->orientation = $orientation;
         
         return $this;
     }
@@ -368,19 +381,17 @@ class Picturesque
             $size = explode('x', $size);
     
             return [
-                'width' => trim($size[0]),
-                'height' => trim($size[1]),
+                'width' => $this->orientation === 'landscape' ? trim($size[0]) : trim($size[1]),
+                'height' => $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]),
             ];
         }
-    
+        
+        $ratio = is_float($ratio) ? ((float) $size) * $ratio : $ratio;
+            
         $result = [
-            'width' => $size,
-            'height' => $ratio,
+            'width' => $this->orientation === 'landscape' ? $size : $ratio,
+            'height' => $this->orientation === 'portrait' ? $size : $ratio,
         ];
-    
-        if (is_float($ratio)) {
-            $result['height'] = ((float) $size) * $ratio;
-        }
     
         return $result;
     }

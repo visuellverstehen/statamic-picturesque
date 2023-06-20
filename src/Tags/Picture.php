@@ -72,6 +72,11 @@ class Picture extends Tags
         }
         
         $picture = new Picturesque($asset);
+        
+        // orientation (landscape/portrait)
+        if ($orientation = $this->params->get(['orientation', 'ori'])) {
+            $picture->orientation($orientation);
+        }
 
         // source tags
         if ($picture->isGlideSupportedFiletype()) {
