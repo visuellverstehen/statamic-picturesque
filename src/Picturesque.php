@@ -136,6 +136,8 @@ class Picturesque
         $output .= empty($img['alt']) ? '' : " alt='{$img['alt']}'";
         $output .= empty($img['class']) ? '' : " class='{$img['class']}'";
         $output .= empty($img['loading']) ? '' : " loading='{$img['loading']}'";
+        $output .= empty($img['width']) ? '' : " width='{$img['width']}'";
+        $output .= empty($img['height']) ? '' : " height='{$img['height']}'";
         $output .= "/>";
         
         $output .= '</picture>';
@@ -270,6 +272,16 @@ class Picturesque
         // lazy loading
         if ($this->options->get('lazy')) {
             $img['loading'] = 'lazy';
+        }
+        
+        // width
+        if ($w = $this->asset->width()) {
+            $img['width'] = $w;
+        }
+        
+        // height
+        if ($h = $this->asset->height()) {
+            $img['height'] = $h;
         }
     
         return $img;
