@@ -70,9 +70,22 @@ class Picture extends Tags
                 return '';
             }
         }
-        
+
         $picture = new Picturesque($asset);
-        
+
+        // format/filetypes
+        if ($filetypes = $this->params->get(['format', 'filetype', 'filetypes'])) {
+            $filetypes = str_replace(' ', '', $filetypes);
+
+            if (str_contains($filetypes, ',')) {
+                $filetypes = explode(',', $filetypes);
+            } else if (str_contains($filetypes, '|')) {
+                $filetypes = explode('|', $filetypes);
+            }
+
+            $picture->format($filetypes);
+        }
+
         // orientation (landscape/portrait)
         if ($orientation = $this->params->get(['orientation', 'ori'])) {
             $picture->orientation($orientation);
@@ -95,18 +108,18 @@ class Picture extends Tags
                 $picture->default($param);
             }
         }
-        
+
         // alt tag
         // if no param is set, the asset will be checked for an alt text
         if ($alt = $this->params->get('alt')) {
             $picture->alt($alt);
         }
-        
+
         // css classes
         if ($class = $this->params->get('class')) {
             $picture->css($class);
         }
-        
+
         // lazy loading
         // if no param is set, config default is used
         if ($this->params->has('lazy')) {

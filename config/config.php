@@ -59,14 +59,14 @@ return [
     
     /*
     |--------------------------------------------------------------------------
-    | Default filetype
+    | Default filetypes
     |--------------------------------------------------------------------------
     |
-    | Define the default filetype for generating sources.
+    | Define the default filetypes for generating sources.
     |
     */
     
-    'default_filetype' => 'webp',
+    'default_filetype' => ['webp'],
     
     /*
     |--------------------------------------------------------------------------

@@ -128,6 +128,13 @@ If you want to use `width x height` as well as the `sizes` attribute, simply use
 
 The tag supports ratios as `1.5:1` or `1.5/1`, so use whichever way you prefer.
 
+### Format/filetypes
+
+You can optionally add one or more filetypes for image conversion:  
+`{{ picture:img size="300x100" format="jpg, webp" }}`  
+
+If no `format` (or `filetype`) parameter is found, the default settings will be used (webp), which can be adjusted in the config. Please note that only supported filetypes can be used for conversion and all other supplied formats will be ignored.
+
 #### Image orientation
 
 By default Picturesque assumes you're working with landscape images. If you have a portrait image, you can change this behaviour by adding the `orientation` (or short `ori`, for all you impatient folks) parameter:  
@@ -198,6 +205,7 @@ public function makePicture(string $imageUrl)
         ->default('300 | 1.5:1')
         ->breakpoint('md', '1024 | 1.6:1')
         ->breakpoint('lg', '1280 | 2:1 | 960px')
+        ->format(['webp', 'jpg'])
         ->alt('I wish everyone would care about alt texts.')
         ->class('w-full object-cover')
         ->lazy(true)
