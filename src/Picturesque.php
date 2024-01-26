@@ -23,15 +23,8 @@ class Picturesque
     
     public function __construct(Asset|string $asset)
     {
-        try {
-            if (! $asset instanceof Asset && ! $asset = AssetFacade::find($asset)) {
-                throw new PicturesqueException('Invalid asset source.');
-            }
-            
-            $this->asset = $asset;
-        }
-        catch (PicturesqueException $e) {
-            return $e;
+        if (! $asset instanceof Asset && ! $this->asset = AssetFacade::find($asset)) {
+            throw new PicturesqueException('Invalid asset source: ' . (string) $asset);
         }
         
         $this->breakpoints = collect();
