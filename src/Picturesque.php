@@ -131,13 +131,20 @@ class Picturesque
         }
 
         $this->data['img'] = $this->makeImg();
+        $this->data['wrapperClass'] = $this->options['wrapperClass'] ?? '';
 
         return $this;
     }
 
     public function html(): string
     {
-        $output = '<picture>';
+        $output = '<picture';
+
+        if (! empty($this->data['wrapperClass'])) {
+            $output .= " class='{$this->data['wrapperClass']}'";
+        }
+
+        $output .= '>';
 
         // sources
         foreach ($this->data['sources'] as $source) {
@@ -202,6 +209,13 @@ class Picturesque
     public function size(string $params): self
     {
         return $this->default($params);
+    }
+
+    public function wrapperClass(string $class): self
+    {
+        $this->options->put('wrapperClass', $class);
+
+        return $this;
     }
 
     private function calcRatio(string $ratio): float|string

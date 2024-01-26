@@ -184,6 +184,9 @@ The tag by default checks the source asset for an alt text. You can overwrite th
 To attach css classes to the img element, use this:  
 `{{ picture:img size="300x200" class="w-full object-cover" }}`   
 
+If you want to attach classes to the picture element, use the `wrapperClass` attribute:  
+`{{ picture:img size="300x200" wrapperClass="foo bar" }}`   
+
 #### Lazy-loading
 You can disable lazy loading (which is activated by default) like this:
 `{{ picture:img size="300x200" lazy="false" }}`   

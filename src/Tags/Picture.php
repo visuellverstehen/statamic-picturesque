@@ -120,6 +120,10 @@ class Picture extends Tags
             $picture->css($class);
         }
 
+        if ($wrapperClass = $this->params->get('wrapperClass')) {
+            $picture->wrapperClass($wrapperClass);
+        }
+
         // lazy loading
         // if no param is set, config default is used
         if ($this->params->has('lazy')) {
