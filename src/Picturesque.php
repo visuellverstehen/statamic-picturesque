@@ -392,10 +392,8 @@ class Picturesque
                 $format = $breakpoint[1];
                 $breakpoint = (string) $breakpoint[0];
 
-                if ($this->breakpoints->get($breakpoint)) {
-                    return $this->makeSource(
-                        $px, $format, $breakpoint
-                    );
+                if ($srcData = $this->breakpoints->get($breakpoint)) {
+                    return $this->makeSource($srcData, $format, $breakpoint);
                 }
             })
             ->filter()
