@@ -155,7 +155,7 @@ class Picturesque
             $sourcetag .= " srcset='{$source['srcset']}'";
             $sourcetag .= array_key_exists('sizes', $source) ? " sizes='{$source['sizes']}'" : '';
 
-            $sourcetag .= '/>';
+            $sourcetag .= '>';
             $output .= $sourcetag;
         }
 
@@ -167,7 +167,7 @@ class Picturesque
         $output .= empty($img['loading']) ? '' : " loading='{$img['loading']}'";
         $output .= empty($img['width']) ? '' : " width='{$img['width']}'";
         $output .= empty($img['height']) ? '' : " height='{$img['height']}'";
-        $output .= "/>";
+        $output .= ">";
 
         $output .= '</picture>';
 
