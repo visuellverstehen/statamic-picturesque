@@ -330,12 +330,12 @@ class Picturesque
 
         // width
         if ($w = $this->asset->width()) {
-            $img['width'] = $w;
+            $img['width'] = (int) round($w);
         }
 
         // height
         if ($h = $this->asset->height()) {
-            $img['height'] = $h;
+            $img['height'] = (int) round($h);
         }
 
         return $img;
