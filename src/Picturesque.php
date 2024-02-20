@@ -22,7 +22,7 @@ class Picturesque
     private $options;
     private $orientation;
 
-    public function __construct(Asset|string $asset)
+    public function __construct(Asset|string $asset, ?Context $tagContext = null)
     {
         $this->asset = $asset;
 
@@ -45,7 +45,7 @@ class Picturesque
             'lazy' => config('picturesque.lazyloading'),
         ]);
 
-        $this->setupGlide();
+        $this->setupGlide($tagContext);
     }
 
     public function alt(string $text): self
@@ -541,12 +541,14 @@ class Picturesque
      * Setup everything we need for Glide image generation.
      * This method simply utilises Statamics own `{{ glide }}` tag to generate image urls.
      */
-    private function setupGlide()
+    private function setupGlide(?Context $context = null)
     {
         $this->glideSource = ['src' => $this->asset];
         $this->evaluateFiletype();
 
-        $context = new Context();
+        if (! $context) {
+            $context = new Context();
+        }
 
         $this->glide = new Glide();
         $this->glide->method = 'index';

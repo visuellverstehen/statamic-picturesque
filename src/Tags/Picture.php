@@ -71,7 +71,7 @@ class Picture extends Tags
             }
         }
 
-        $picture = new Picturesque($asset);
+        $picture = new Picturesque($asset, $this->context);
 
         // format/filetypes
         if ($filetypes = $this->params->get(['format', 'filetype', 'filetypes'])) {
