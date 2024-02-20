@@ -238,14 +238,26 @@ class Picturesque
         return (float) $h / $w;
     }
 
-    private function evaluateFiletype()
+    private function evaluateFiletype(): string
     {
-        if (! $this->asset->meta() || ! array_key_exists('mime_type', $this->asset->meta())) {
+        $meta = $this->asset->meta();
+        
+        if (! $meta || 
+            ! array_key_exists('mime_type', $meta) || 
+            ! is_string($meta['mime_type']) || 
+            ! str_contains($meta['mime_type'], '/')
+        ) {
             return null;
         }
-        $filetype = strtolower(explode('/', $this->asset->meta()['mime_type'])[1]);
+        
+        $filetype = strtolower(explode('/', $meta['mime_type'])[1]);
 
-        $this->supportedFiletype = in_array($filetype, config('picturesque.supported_filetypes'));
+        $this->supportedFiletype = in_array(
+            $filetype, 
+            config('picturesque.supported_filetypes')
+        );
+        
+        return $filetype;
     }
 
     private function filetypes(): array
