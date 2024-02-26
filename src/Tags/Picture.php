@@ -62,6 +62,41 @@ class Picture extends Tags
 
         return $this->output($asset);
     }
+    
+    protected function handleAltText(Picturesque &$picture)
+    {
+        // if no param is set, the asset will be checked for an alt text
+        if ($alt = $this->params->get('alt')) {
+            $picture->alt($alt);
+        }
+    }
+    
+    protected function handleCssClasses(Picturesque &$picture)
+    {
+        if ($class = $this->params->get('class')) {
+            $picture->css($class);
+        }
+    }
+    
+    protected function handleLazyLoading(Picturesque &$picture)
+    {
+        // if no param is set, config default is used
+        if ($this->params->has('lazy')) {
+            if ($this->params->get('lazy') == false) {
+                $picture->lazy(false);
+            }
+            else {
+                $picture->lazy(true);
+            }
+        }
+    }
+    
+    protected function handleWrapperCssClasses(Picturesque &$picture)
+    {
+        if ($wrapperClass = $this->params->get('wrapperClass')) {
+            $picture->wrapperClass($wrapperClass);
+        }
+    }
 
     protected function output($asset)
     {
@@ -109,31 +144,10 @@ class Picture extends Tags
             }
         }
 
-        // alt tag
-        // if no param is set, the asset will be checked for an alt text
-        if ($alt = $this->params->get('alt')) {
-            $picture->alt($alt);
-        }
-
-        // css classes
-        if ($class = $this->params->get('class')) {
-            $picture->css($class);
-        }
-
-        if ($wrapperClass = $this->params->get('wrapperClass')) {
-            $picture->wrapperClass($wrapperClass);
-        }
-
-        // lazy loading
-        // if no param is set, config default is used
-        if ($this->params->has('lazy')) {
-            if ($this->params->get('lazy') == false) {
-                $picture->lazy(false);
-            }
-            else {
-                $picture->lazy(true);
-            }
-        }
+        $this->handleAltText($picture);
+        $this->handleCssClasses($picture);
+        $this->handleWrapperCssClasses($picture);
+        $this->handleLazyLoading($picture);
 
         $picture->generate();
 
