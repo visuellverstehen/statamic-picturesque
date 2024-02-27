@@ -48,6 +48,11 @@ class Picturesque
         $this->setupGlide($tagContext);
     }
 
+    public function getAsset(): Asset
+    {
+        return $this->asset;
+    }
+    
     public function alt(string $text): self
     {
         $this->options->put('alt', $text);
