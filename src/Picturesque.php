@@ -47,7 +47,7 @@ class Picturesque
 
         $this->setupGlide($tagContext);
     }
-
+    
     public function alt(string $text): self
     {
         $this->options->put('alt', $text);
@@ -135,6 +135,11 @@ class Picturesque
 
         return $this;
     }
+    
+    public function getAsset(): Asset
+    {
+        return $this->asset;
+    }
 
     public function html(): string
     {
@@ -176,7 +181,7 @@ class Picturesque
 
     public function isGlideSupportedFiletype(): bool|null
     {
-        if (! $this->asset) {
+        if (! $this->getAsset()) {
             return null;
         }
 
@@ -240,7 +245,7 @@ class Picturesque
 
     private function evaluateFiletype(): string
     {
-        $meta = $this->asset->meta();
+        $meta = $this->getAsset()->meta();
         
         if (! $meta || 
             ! array_key_exists('mime_type', $meta) || 
@@ -281,7 +286,7 @@ class Picturesque
     private function makeAlt(): string
     {
         if (($alt = $this->options->get('alt')) ||
-            ($alt = $this->asset->data()->get('alt'))) {
+            ($alt = $this->getAsset()->data()->get('alt'))) {
             $alt = strip_tags($alt);
 
             if (config('picturesque.alt_fullstop')) {
@@ -324,7 +329,7 @@ class Picturesque
         ];
 
         if (! $this->isGlideSupportedFiletype()) {
-            $img['src'] = $this->asset->url();
+            $img['src'] = $this->getAsset()->url();
         } else {
             $img['src'] = $this->makeGlideUrl(['width' => $this->smallestSrc(), 'fit' => 'crop_focal']);
         }
@@ -341,12 +346,12 @@ class Picturesque
         }
 
         // width
-        if ($w = $this->asset->width()) {
+        if ($w = $this->getAsset()->width()) {
             $img['width'] = (int) round($w);
         }
 
         // height
-        if ($h = $this->asset->height()) {
+        if ($h = $this->getAsset()->height()) {
             $img['height'] = (int) round($h);
         }
 
@@ -543,7 +548,7 @@ class Picturesque
      */
     private function setupGlide(?Context $context = null)
     {
-        $this->glideSource = ['src' => $this->asset];
+        $this->glideSource = ['src' => $this->getAsset()];
         $this->evaluateFiletype();
 
         if (! $context) {
