@@ -79,6 +79,13 @@ class Picturesque
         return $this->class($css);
     }
 
+    public function style(string $style): self
+    {
+        $this->options->put('style', $style);
+
+        return $this;
+    }
+
     public function data(): array
     {
         return $this->data;
@@ -172,6 +179,7 @@ class Picturesque
         $output .= empty($img['loading']) ? '' : " loading='{$img['loading']}'";
         $output .= empty($img['width']) ? '' : " width='{$img['width']}'";
         $output .= empty($img['height']) ? '' : " height='{$img['height']}'";
+        $output .= empty($img['style']) ? '' : " style='{$img['style']}'";
         $output .= ">";
 
         $output .= '</picture>';
@@ -338,6 +346,12 @@ class Picturesque
         $css = $this->makeClass();
         if (! empty($css)) {
             $img['class'] = $css;
+        }
+
+        // inline style
+        $style = $this->options->get('style');
+        if (! empty($style)) {
+            $img['style'] = $style;
         }
 
         // lazy loading
