@@ -77,7 +77,14 @@ class Picture extends Tags
             $picture->css($class);
         }
     }
-    
+
+    protected function handleInlineStyles(Picturesque &$picture)
+    {
+        if ($style = $this->params->get('style')) {
+            $picture->style($style);
+        }
+    }
+
     protected function handleLazyLoading(Picturesque &$picture)
     {
         // if no param is set, config default is used
@@ -146,6 +153,7 @@ class Picture extends Tags
 
         $this->handleAltText($picture);
         $this->handleCssClasses($picture);
+        $this->handleInlineStyles($picture);
         $this->handleWrapperCssClasses($picture);
         $this->handleLazyLoading($picture);
 
