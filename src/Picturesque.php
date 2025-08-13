@@ -17,6 +17,7 @@ class Picturesque
     private $data;
     private $filetypes;
     private $glide;
+    private $glideParams;
     private $glideSource;
     private $supportedFiletype;
     private $options;
@@ -33,6 +34,7 @@ class Picturesque
         $this->breakpoints = collect();
         $this->orientation = 'landscape';
         $this->filetypes = $this->filetypes();
+        $this->glideParams = [];
 
         $this->data = [
             'sources' => [],
@@ -139,6 +141,13 @@ class Picturesque
 
         $this->data['img'] = $this->makeImg();
         $this->data['wrapperClass'] = $this->options['wrapperClass'] ?? '';
+
+        return $this;
+    }
+
+    public function glideParams(array $params): self
+    {
+        $this->glideParams = $params;
 
         return $this;
     }
@@ -339,7 +348,11 @@ class Picturesque
         if (! $this->isGlideSupportedFiletype()) {
             $img['src'] = $this->getAsset()->url();
         } else {
-            $img['src'] = $this->makeGlideUrl(['width' => $this->smallestSrc(), 'fit' => 'crop_focal']);
+            $params = array_merge(
+                $this->glideParams,
+                ['width' => $this->smallestSrc(), 'fit' => 'crop_focal']
+            );
+            $img['src'] = $this->makeGlideUrl($params);
         }
 
         // css class
@@ -434,6 +447,9 @@ class Picturesque
     private function makeSrcset(array $sourceData, string $format, $glideOptions = []): string
     {
         $sources = [];
+
+        // Merge custom glide params with provided options
+        $glideOptions = array_merge($this->glideParams, $glideOptions);
 
         if (! array_key_exists('format', $glideOptions)) {
             $glideOptions['format'] = $format;
