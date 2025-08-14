@@ -147,7 +147,19 @@ class Picturesque
 
     public function glideParams(array $params): self
     {
-        $this->glideParams = $params;
+        // Filter out width/height parameters and log a warning if they're provided
+        $restrictedParams = ['width', 'w', 'height', 'h'];
+        $filteredParams = [];
+        
+        foreach ($params as $key => $value) {
+            if (in_array($key, $restrictedParams)) {
+                info('Picturesque: Ignoring glide:width/height parameters as they\'re managed by Picturesque');
+                continue;
+            }
+            $filteredParams[$key] = $value;
+        }
+        
+        $this->glideParams = $filteredParams;
 
         return $this;
     }
@@ -348,10 +360,17 @@ class Picturesque
         if (! $this->isGlideSupportedFiletype()) {
             $img['src'] = $this->getAsset()->url();
         } else {
+            // Build params with custom glide params first, then required params
             $params = array_merge(
                 $this->glideParams,
-                ['width' => $this->smallestSrc(), 'fit' => 'crop_focal']
+                ['width' => $this->smallestSrc()]
             );
+            
+            // Only set default fit if not provided in custom params
+            if (! array_key_exists('fit', $this->glideParams)) {
+                $params['fit'] = 'crop_focal';
+            }
+            
             $img['src'] = $this->makeGlideUrl($params);
         }
 
@@ -455,7 +474,7 @@ class Picturesque
             $glideOptions['format'] = $format;
         }
 
-        // crop options
+        // Use custom fit if provided, otherwise default to crop_focal
         if (! array_key_exists('fit', $glideOptions)) {
             $glideOptions['fit'] = 'crop_focal';
         }
