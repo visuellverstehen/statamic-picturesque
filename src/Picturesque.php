@@ -166,6 +166,8 @@ class Picturesque
             $sourcetag .= array_key_exists('media', $source) ? " media='{$source['media']}'" : '';
             $sourcetag .= " srcset='{$source['srcset']}'";
             $sourcetag .= array_key_exists('sizes', $source) ? " sizes='{$source['sizes']}'" : '';
+            $sourcetag .= array_key_exists('width', $source) ? " width='{$source['width']}'" : '';
+            $sourcetag .= array_key_exists('height', $source) ? " height='{$source['height']}'" : '';
 
             $sourcetag .= '>';
             $output .= $sourcetag;
@@ -359,14 +361,29 @@ class Picturesque
             $img['loading'] = 'lazy';
         }
 
-        // width
-        if ($w = $this->getAsset()->width()) {
-            $img['width'] = (int) round($w);
-        }
-
-        // height
-        if ($h = $this->getAsset()->height()) {
-            $img['height'] = (int) round($h);
+        // width and height
+        if ($this->breakpoints->has('default')) {
+            // Use processed dimensions from default breakpoint
+            $defaultConfig = $this->breakpoints->get('default');
+            $parsed = $this->parseParam($defaultConfig);
+            
+            if (isset($parsed['srcset'][0])) {
+                $img['width'] = (int) round($parsed['srcset'][0]['width']);
+                $img['height'] = (int) round($parsed['srcset'][0]['height']);
+            }
+        } else {
+            // Calculate dimensions based on smallestSrc width to match actual processed image
+            $originalWidth = $this->getAsset()->width();
+            $originalHeight = $this->getAsset()->height();
+            
+            if ($originalWidth && $originalHeight) {
+                $processedWidth = $this->smallestSrc();
+                $aspectRatio = $originalHeight / $originalWidth;
+                $processedHeight = $processedWidth * $aspectRatio;
+                
+                $img['width'] = $processedWidth;
+                $img['height'] = (int) round($processedHeight);
+            }
         }
 
         return $img;
@@ -397,6 +414,14 @@ class Picturesque
         // sizes
         if ($sourceData['sizes']) {
             $source['sizes'] = $sourceData['sizes'];
+        }
+
+        // width and height attributes
+        // Use the primary (1x DPR) dimensions from srcset
+        if (isset($sourceData['srcset'][0])) {
+            $primarySource = $sourceData['srcset'][0];
+            $source['width'] = (int) round($primarySource['width']);
+            $source['height'] = (int) round($primarySource['height']);
         }
 
         return $source;
