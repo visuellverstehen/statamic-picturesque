@@ -115,9 +115,7 @@ class Picture extends Tags
 
     protected function handleGlideParams(Picturesque &$picture)
     {
-        if ($glideParams = $this->getGlideParams()) {
-            $picture->glideParams($glideParams);
-        }
+        $picture->glideParams($this->getGlideParams());
     }
 
     protected function output($asset)
