@@ -367,9 +367,9 @@ class Picturesque
             $defaultConfig = $this->breakpoints->get('default');
             $parsed = $this->parseParam($defaultConfig);
             
-            if (isset($parsed['srcset'][0])) {
-                $img['width'] = (int) round($parsed['srcset'][0]['width']);
-                $img['height'] = (int) round($parsed['srcset'][0]['height']);
+            if (! empty($parsed['srcset'])) {
+                $img['width'] = (int) round($parsed['srcset']['width']);
+                $img['height'] = (int) round($parsed['srcset']['height']);
             }
         } else {
             // Calculate dimensions based on smallestSrc width to match actual processed image
@@ -417,11 +417,9 @@ class Picturesque
         }
 
         // width and height attributes
-        // Use the primary (1x DPR) dimensions from srcset
-        if (isset($sourceData['srcset'][0])) {
-            $primarySource = $sourceData['srcset'][0];
-            $source['width'] = (int) round($primarySource['width']);
-            $source['height'] = (int) round($primarySource['height']);
+        if (! empty($sourceData['srcset'])) {
+            $source['width'] = (int) round($sourceData['srcset']['width']);
+            $source['height'] = (int) round($sourceData['srcset']['height']);
         }
 
         return $source;
@@ -458,8 +456,6 @@ class Picturesque
 
     private function makeSrcset(array $sourceData, string $format, $glideOptions = []): string
     {
-        $sources = [];
-
         if (! array_key_exists('format', $glideOptions)) {
             $glideOptions['format'] = $format;
         }
@@ -468,74 +464,52 @@ class Picturesque
         if (! array_key_exists('fit', $glideOptions)) {
             $glideOptions['fit'] = 'crop_focal';
         }
+        
+        $sources = [];
+        $source = $sourceData['srcset'];
 
-        foreach ($sourceData['srcset'] as $source) {
-            // with sizes
-            if ($sourceData['sizes']) {
-                $sources = array_merge($sources, collect(config('picturesque.size_multipliers'))
-                    ->map(function ($multiplier) use ($source) {
-                        return [
-                            'width' => ((float) $source['width']) * $multiplier,
-                            'height' => ((float) $source['height']) * $multiplier,
-                        ];
-                    })
-                    ->unique()
-                    ->transform(function ($sizes) use ($glideOptions) {
-                        $options = array_merge($glideOptions, $sizes);
-                        return "{$this->makeGlideUrl($options)} {$sizes['width']}w";
-                    })
-                    ->toArray()
-                );
-            }
-            // with dpr
-            else {
-                $sources = array_merge($sources, collect(config('picturesque.dpr'))
-                    ->mapWithKeys(function ($dpr) use ($source) {
-                        return [$dpr => [
-                            'width' => ((float) $source['width']) * $dpr,
-                            'height' => ((float) $source['height']) * $dpr,
-                        ]];
-                    })
-                    ->unique()
-                    ->transform(function ($sizes, $dpr) use ($glideOptions) {
-                        $options = array_merge($glideOptions, $sizes);
-                        return "{$this->makeGlideUrl($options)} {$dpr}x";
-                    })
-                    ->toArray()
-                );
-            }
+        // with sizes
+        if ($sourceData['sizes']) {
+            $sources = collect(config('picturesque.size_multipliers'))
+            ->map(function ($multiplier) use ($source) {
+                return [
+                    'width' => ((float) $source['width']) * $multiplier,
+                    'height' => ((float) $source['height']) * $multiplier,
+                ];
+            })
+            ->unique()
+            ->transform(function ($sizes) use ($glideOptions) {
+                $options = array_merge($glideOptions, $sizes);
+                
+                return "{$this->makeGlideUrl($options)} {$sizes['width']}w";
+            })
+            ->toArray();
+        }
+        // with dpr
+        else {
+            $sources = collect(config('picturesque.dpr'))
+            ->mapWithKeys(function ($dpr) use ($source) {
+                return [$dpr => [
+                    'width' => ((float) $source['width']) * $dpr,
+                    'height' => ((float) $source['height']) * $dpr,
+                ]];
+            })
+            ->unique()
+            ->transform(function ($sizes, $dpr) use ($glideOptions) {
+                $options = array_merge($glideOptions, $sizes);
+                
+                return "{$this->makeGlideUrl($options)} {$dpr}x";
+            })
+            ->toArray();
         }
 
         return implode(',', $sources);
     }
 
-    private function parseSingleSize(string $size, float|string $ratio = 'auto'): array
-    {
-        $size = trim($size);
-
-        if (strpos($size, 'x')) {
-            $size = explode('x', $size);
-
-            return [
-                'width' => $this->orientation === 'landscape' ? trim($size[0]) : trim($size[1]),
-                'height' => $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]),
-            ];
-        }
-
-        $ratio = is_float($ratio) ? ((float) $size) * $ratio : $ratio;
-
-        $result = [
-            'width' => $this->orientation === 'landscape' ? $size : $ratio,
-            'height' => $this->orientation === 'portrait' ? $size : $ratio,
-        ];
-
-        return $result;
-    }
-
     /**
      * Converts a size param string into a structured array.
      */
-    public function parseParam(string $data): array
+    private function parseParam(string $data): array
     {
         $result = [
             'srcset' => null,
@@ -564,21 +538,28 @@ class Picturesque
 
     /**
      * Converts a string with srcset information into a structured array.
-     * e.g. "300,600x200" -> [ ['width' => 300], ['width' => 600, 'height' => 200] ]
+     * e.g. "600x200" -> ['width' => 600, 'height' => 200]
      * Supports a $ratio option to calc height (if no explicit height supplied).
      */
     private function parseSizeData(string $sizeData, float|string $ratio = 'auto'): array
     {
-        if (strpos($sizeData, ',')) {
-            $sizes = [];
-            foreach (explode(',', $sizeData) as $size) {
-                $sizes[] = $this->parseSingleSize($size, $ratio);
-            }
-
-            return $sizes;
+        $size = trim($sizeData);
+        
+        if (strpos($size, 'x')) {
+            $size = explode('x', $size);
+        
+            return [
+                'width' => $this->orientation === 'landscape' ? trim($size[0]) : trim($size[1]),
+                'height' => $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]),
+            ];
         }
-
-        return [$this->parseSingleSize($sizeData, $ratio)];
+        
+        $calculatedValueOrRatio = is_float($ratio) ? ((float) $size) * $ratio : $ratio;
+        
+        return [
+            'width' => $this->orientation === 'landscape' ? $size : $calculatedValueOrRatio,
+            'height' => $this->orientation === 'portrait' ? $size : $calculatedValueOrRatio,
+        ];
     }
 
     /**
