@@ -128,7 +128,7 @@ If you want to use `width x height` as well as the `sizes` attribute, simply use
 
 The tag supports ratios as `1.5:1` or `1.5/1`, so use whichever way you prefer.
 
-### Format/filetypes
+#### Format/filetypes
 
 You can optionally add one or more filetypes for image conversion:  
 `{{ picture:img size="300x100" format="jpg, webp" }}`  
@@ -147,6 +147,31 @@ All calculations for ratio etc. then use the first number as the height and calc
 The breakpoints for the media attributes can be configured ([see below](#configuration)) and use the [tailwindcss breakpoints](https://tailwindcss.com/docs/responsive-design) as default.
 
 The default (so essentially the `0` breakpoint) can be defined through either the `size` or `default` parameter.
+
+#### Glide Parameters
+
+You can pass any Glide image manipulation parameters to the tag using the `glide:` prefix:
+
+```antlers
+{{ picture:img size="300x200" glide:blur="20" }}
+{{ picture:img size="300x200" glide:quality="85" glide:brightness="75" }}
+{{ picture:img size="300x200" glide:fit="contain" glide:bg="ffffff" }}
+{{ picture:img size="300x200" glide:filt="greyscale" }}
+```
+
+All standard Glide parameters are supported, including:
+- **Effects**: `blur`, `brightness`, `contrast`, `gamma`, `sharpen`
+- **Filters**: `filt` (greyscale, sepia, etc.)
+- **Quality**: `quality` or `q`
+- **Fit modes**: `fit` (contain, max, fill, stretch, crop)
+- **Background**: `bg` for background color when using fill modes
+
+Please refer to the [Glide documentation](https://glide.thephpleague.com/2.0/api/quick-reference/) for all available parameters.
+
+##### Important notes
+- Glide parameters for width (`w`, `width`) and height (`h`, `height`) are ignored as they are managed by Picturesque's responsive sizing.
+- The `fit` parameter defaults to `crop_focal` when not specified.
+- Glide parameters are applied to all generated image variants (different sizes, breakpoints and formats).
 
 #### JSON mode
 If you don't want to get a precompiled HTML string but rather have all the data as JSON for passing it on (e. g. to a Vue component), you can tell the tag to do just that:  
@@ -193,33 +218,9 @@ You can disable lazy loading (which is activated by default) like this:
 
 A setting in the config ([see below](#configuration)) allows you to adjust the default behaviour.
 
-### Glide Parameters
-
-You can pass any Glide image manipulation parameters to the tag using the `glide:` prefix:
-
-```antlers
-{{ picture:img size="300x200" glide:blur="20" }}
-{{ picture:img size="300x200" glide:quality="85" glide:brightness="75" }}
-{{ picture:img size="300x200" glide:fit="contain" glide:bg="ffffff" }}
-{{ picture:img size="300x200" glide:filt="greyscale" }}
-```
-
-All standard Glide parameters are supported, including:
-- **Effects**: `blur`, `brightness`, `contrast`, `gamma`, `sharpen`
-- **Filters**: `filt` (greyscale, sepia, etc.)
-- **Quality**: `quality` or `q`
-- **Fit modes**: `fit` (contain, max, fill, stretch, crop)
-- **Background**: `bg` for background color when using fill modes
-- **And many more** - see [Glide documentation](https://glide.thephpleague.com/2.0/api/quick-reference/) for all available parameters
-
-**Important notes:**
-- Width (`w`, `width`) and height (`h`, `height`) parameters will be ignored as they are managed by Picturesque's responsive sizing
-- The `fit` parameter defaults to `crop_focal` when not specified
-- Glide parameters are applied to all generated image variants (different sizes, breakpoints, and formats)
-
 ### Using the base class
 
-If you want to use the logic of the tag outside of an Antlers template you can simple use the `Picturesque` base class:
+If you want to use the logic of the tag outside of an Antlers template you can simply use the `Picturesque` base class:
 
 ```php
 use VV\Picturesque\Picturesque;
@@ -233,30 +234,19 @@ public function makePicture(string $imageUrl)
         ->breakpoint('md', '1024 | 1.6:1')
         ->breakpoint('lg', '1280 | 2:1 | 960px')
         ->format(['webp', 'jpg'])
-        ->alt('I wish everyone would care about alt texts.')
+        ->glideParams([
+            'blur' => 10,
+            'quality' => 85,
+            'fit' => 'contain',
+            'bg' => 'ffffff'
+        ])
+        ->alt('A huge billboard that says ›I wish everyone would care about alt texts.‹')
         ->class('w-full object-cover')
         ->lazy(true)
         ->generate() // you always have to call this!
         ->html(); // or ->json()
 }
 ```
-
-You can also apply Glide parameters when using the base class:
-
-```php
-$picture = (new Picturesque($imageUrl))
-    ->default('300 | 1.5:1')
-    ->glideParams([
-        'blur' => 10,
-        'quality' => 85,
-        'fit' => 'contain',
-        'bg' => 'ffffff'
-    ])
-    ->generate()
-    ->html();
-```
-
-Note: Width and height parameters passed to `glideParams()` will be ignored as they are managed by Picturesque's responsive image generation.
 
 Please be aware that the image currently has to be a Statamic asset and must be findable through the Asset facade (`Statamic\Facades\Asset::find($url)`).
 
