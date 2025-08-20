@@ -147,16 +147,14 @@ class Picturesque
 
     public function glideParams(array $params): self
     {
-        // Filter out width/height parameters and log a warning if they're provided
+        // Filter out width/height parameters
         $restrictedParams = ['width', 'w', 'height', 'h'];
         $filteredParams = [];
         
         foreach ($params as $key => $value) {
-            if (in_array($key, $restrictedParams)) {
-                info('Picturesque: Ignoring glide:width/height parameters as they\'re managed by Picturesque');
-                continue;
+            if (! in_array($key, $restrictedParams)) {
+                $filteredParams[$key] = $value;
             }
-            $filteredParams[$key] = $value;
         }
         
         $this->glideParams = $filteredParams;
