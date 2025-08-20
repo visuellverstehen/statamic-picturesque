@@ -424,7 +424,7 @@ class Picturesque
         }
 
         // srcset
-        $source['srcset'] = $this->makeSrcset($sourceData, $format);
+        $source['srcset'] = $this->makeSrcset($sourceData, $format, $this->glideParams);
 
         // sizes
         if ($sourceData['sizes']) {
@@ -467,9 +467,6 @@ class Picturesque
     {
         $sources = [];
 
-        // Merge custom glide params with provided options
-        $glideOptions = array_merge($this->glideParams, $glideOptions);
-
         if (! array_key_exists('format', $glideOptions)) {
             $glideOptions['format'] = $format;
         }
@@ -509,6 +506,7 @@ class Picturesque
                     ->unique()
                     ->transform(function ($sizes, $dpr) use ($glideOptions) {
                         $options = array_merge($glideOptions, $sizes);
+                        
                         return "{$this->makeGlideUrl($options)} {$dpr}x";
                     })
                     ->toArray()
