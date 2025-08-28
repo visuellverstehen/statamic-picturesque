@@ -17,6 +17,7 @@ class Picturesque
     private $data;
     private $filetypes;
     private $glide;
+    private $glideParams;
     private $glideSource;
     private $supportedFiletype;
     private $options;
@@ -33,6 +34,7 @@ class Picturesque
         $this->breakpoints = collect();
         $this->orientation = 'landscape';
         $this->filetypes = $this->filetypes();
+        $this->glideParams = [];
 
         $this->data = [
             'sources' => [],
@@ -139,6 +141,23 @@ class Picturesque
 
         $this->data['img'] = $this->makeImg();
         $this->data['wrapperClass'] = $this->options['wrapperClass'] ?? '';
+
+        return $this;
+    }
+
+    public function glideParams(array $params): self
+    {
+        // Filter out width/height parameters
+        $restrictedParams = ['width', 'w', 'height', 'h'];
+        $filteredParams = [];
+        
+        foreach ($params as $key => $value) {
+            if (! in_array($key, $restrictedParams)) {
+                $filteredParams[$key] = $value;
+            }
+        }
+        
+        $this->glideParams = $filteredParams;
 
         return $this;
     }
@@ -339,7 +358,18 @@ class Picturesque
         if (! $this->isGlideSupportedFiletype()) {
             $img['src'] = $this->getAsset()->url();
         } else {
-            $img['src'] = $this->makeGlideUrl(['width' => $this->smallestSrc(), 'fit' => 'crop_focal']);
+            // Build params with custom glide params first, then required params
+            $params = array_merge(
+                $this->glideParams,
+                ['width' => $this->smallestSrc()]
+            );
+            
+            // Only set default fit if not provided in custom params
+            if (! array_key_exists('fit', $this->glideParams)) {
+                $params['fit'] = 'crop_focal';
+            }
+            
+            $img['src'] = $this->makeGlideUrl($params);
         }
 
         // css class
@@ -392,7 +422,7 @@ class Picturesque
         }
 
         // srcset
-        $source['srcset'] = $this->makeSrcset($sourceData, $format);
+        $source['srcset'] = $this->makeSrcset($sourceData, $format, $this->glideParams);
 
         // sizes
         if ($sourceData['sizes']) {
@@ -439,7 +469,7 @@ class Picturesque
             $glideOptions['format'] = $format;
         }
 
-        // crop options
+        // Use custom fit if provided, otherwise default to crop_focal
         if (! array_key_exists('fit', $glideOptions)) {
             $glideOptions['fit'] = 'crop_focal';
         }
@@ -474,6 +504,7 @@ class Picturesque
                     ->unique()
                     ->transform(function ($sizes, $dpr) use ($glideOptions) {
                         $options = array_merge($glideOptions, $sizes);
+                        
                         return "{$this->makeGlideUrl($options)} {$dpr}x";
                     })
                     ->toArray()
