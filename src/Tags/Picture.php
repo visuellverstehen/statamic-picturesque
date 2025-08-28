@@ -105,6 +105,19 @@ class Picture extends Tags
         }
     }
 
+    protected function getGlideParams(): array
+    {
+        return collect($this->params)
+            ->filter(fn ($value, $key) => str_starts_with($key, 'glide:'))
+            ->mapWithKeys(fn ($value, $key) => [str_replace('glide:', '', $key) => $value])
+            ->toArray();
+    }
+
+    protected function handleGlideParams(Picturesque &$picture)
+    {
+        $picture->glideParams($this->getGlideParams());
+    }
+
     protected function output($asset)
     {
         if (! is_a($asset, 'Statamic\Contracts\Assets\Asset')) {
@@ -156,6 +169,7 @@ class Picture extends Tags
         $this->handleInlineStyles($picture);
         $this->handleWrapperCssClasses($picture);
         $this->handleLazyLoading($picture);
+        $this->handleGlideParams($picture);
 
         $picture->generate();
 
