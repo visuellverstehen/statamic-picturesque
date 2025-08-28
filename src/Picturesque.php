@@ -366,7 +366,7 @@ class Picturesque
             
             // Only set default fit if not provided in custom params
             if (! array_key_exists('fit', $this->glideParams)) {
-                $params['fit'] = 'crop_focal';
+                $params['fit'] = config('picturesque.default_glide_fit');
             }
             
             $img['src'] = $this->makeGlideUrl($params);
@@ -469,9 +469,9 @@ class Picturesque
             $glideOptions['format'] = $format;
         }
 
-        // Use custom fit if provided, otherwise default to crop_focal
+        // Use custom fit if provided, otherwise use default from config
         if (! array_key_exists('fit', $glideOptions)) {
-            $glideOptions['fit'] = 'crop_focal';
+            $glideOptions['fit'] = config('picturesque.default_glide_fit');
         }
 
         foreach ($sourceData['srcset'] as $source) {
