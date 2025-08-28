@@ -469,7 +469,7 @@ class Picturesque
             $glideOptions['format'] = $format;
         }
 
-        // Use custom fit if provided, otherwise default to crop_focal
+        // Use custom fit if provided, otherwise use default from config
         if (! array_key_exists('fit', $glideOptions)) {
             $glideOptions['fit'] = config('picturesque.default_glide_fit');
         }
