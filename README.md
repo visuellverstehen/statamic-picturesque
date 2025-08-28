@@ -29,8 +29,8 @@ Takes width and (optionally) ratio through the `size` attribute, with values sep
     <source type="image/webp" srcset="
         [img-url]?fm=webp&amp;fit=crop&amp;w=300&amp;h=200&amp;s=[…] 1x,
         [img-url]?fm=webp&amp;fit=crop&amp;w=600&amp;h=400&amp;s=[…] 2x
-    ">
-    <img src="[img-url]?w=300&amp;fit=crop&amp;s=[…]" loading="lazy">
+    " width="300" height="200">
+    <img src="[img-url]?w=300&amp;fit=crop&amp;s=[…]" loading="lazy" width="300" height="200">
 </picture>
 ```
 
@@ -47,16 +47,16 @@ Takes width and ratio through breakpoint-specific attributes, with values separa
     <source type="image/webp" media="(min-width: 1024px)" srcset="
         [img-url]?fm=webp&amp;fit=crop&amp;w=1280&amp;h=640&amp;s=[…] 1x,
         [img-url]?fm=webp&amp;fit=crop&amp;w=2560&amp;h=1280&amp;s=[…] 2x
-    ">
+    " width="1280" height="640">
     <source type="image/webp" media="(min-width: 768px)" srcset="
         [img-url]?fm=webp&amp;fit=crop&amp;w=1024&amp;h=640&amp;s=[…] 1x,
         [img-url]?fm=webp&amp;fit=crop&amp;w=2048&amp;h=1280&amp;s=[…] 2x
-    ">
+    " width="1024" height="640">
     <source type="image/webp" media="(min-width: 0px)" srcset="
         [img-url]?fm=webp&amp;fit=crop&amp;w=300&amp;h=200&amp;s=[…] 1x,
         [img-url]?fm=webp&amp;fit=crop&amp;w=600&amp;h=400&amp;s=[…] 2x
-    ">
-    <img src="[img-url]?w=300&amp;fit=crop&amp;s=[…]" loading="lazy">
+    " width="300" height="200">
+    <img src="[img-url]?w=300&amp;fit=crop&amp;s=[…]" loading="lazy" width="300" height="200">
 </picture>
 ```
 
@@ -74,18 +74,18 @@ Takes width, ratio and sizes through breakpoint-specific attributes, with values
         [img-url]?fm=webp&amp;fit=crop&amp;w=1280&amp;h=640&amp;s=[…] 1280w,
         [img-url]?fm=webp&amp;fit=crop&amp;w=1920&amp;h=960&amp;s=[…] 1920w,
         [img-url]?fm=webp&amp;fit=crop&amp;w=2560&amp;h=1280&amp;s=[…] 2560w
-    " sizes="960px">
+    " sizes="960px" width="1280" height="640">
     <source type="image/webp" media="(min-width: 768px)" srcset="
         [img-url]?fm=webp&amp;fit=crop&amp;w=1024&amp;h=640&amp;s=[…] 1024w,
         [img-url]?fm=webp&amp;fit=crop&amp;w=1536&amp;h=960&amp;s=[…] 1536w,
         [img-url]?fm=webp&amp;fit=crop&amp;w=2048&amp;h=1280&amp;s=[…] 2048w
-    " sizes="80vw">
+    " sizes="80vw" width="1024" height="640">
     <source type="image/webp" media="(min-width: 0px)" srcset="
         [img-url]?fm=webp&amp;fit=crop&amp;w=300&amp;h=200&amp;s=[…] 300w,
         [img-url]?fm=webp&amp;fit=crop&amp;w=450&amp;h=300&amp;s=[…] 450w,
         [img-url]?fm=webp&amp;fit=crop&amp;w=600&amp;h=400&amp;s=[…] 600w
-    " sizes="100vw">
-    <img src="[img-url]?w=300&amp;fit=crop&amp;s=[…]" loading="lazy">
+    " sizes="100vw" width="300" height="200">
+    <img src="[img-url]?w=300&amp;fit=crop&amp;s=[…]" loading="lazy" width="300" height="200">
 </picture>
 ```
 
@@ -186,13 +186,16 @@ Results in:
         "default": {
             "type": "image\/webp",
             "srcset": "[img-url]?fm=webp&fit=crop&w=300&h=200&s=[…] 1x,[img-url]?fm=webp&fit=crop&w=600&h=400&s=[…] 2x"
+            "width": "300",
+            "height": "200"
         }
     },
     "img": {
         "alt": "Alt text provided by img asset.",
-        "class": "",
         "src": "[img-url]?w=300&fit=crop&s=[…]",
-        "loading": "lazy"
+        "loading": "lazy",
+        "width": "300",
+        "height": "200"
     }
 }
 ```

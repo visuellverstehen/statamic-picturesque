@@ -140,7 +140,10 @@ class Picturesque
         }
 
         $this->data['img'] = $this->makeImg();
-        $this->data['wrapperClass'] = $this->options['wrapperClass'] ?? '';
+        
+        if (! empty($this->options['wrapperClass'])) {
+            $this->data['wrapperClass'] = $this->options['wrapperClass'];
+        }
 
         return $this;
     }
@@ -185,6 +188,8 @@ class Picturesque
             $sourcetag .= array_key_exists('media', $source) ? " media='{$source['media']}'" : '';
             $sourcetag .= " srcset='{$source['srcset']}'";
             $sourcetag .= array_key_exists('sizes', $source) ? " sizes='{$source['sizes']}'" : '';
+            $sourcetag .= array_key_exists('width', $source) ? " width='{$source['width']}'" : '';
+            $sourcetag .= array_key_exists('height', $source) ? " height='{$source['height']}'" : '';
 
             $sourcetag .= '>';
             $output .= $sourcetag;
@@ -389,14 +394,29 @@ class Picturesque
             $img['loading'] = 'lazy';
         }
 
-        // width
-        if ($w = $this->getAsset()->width()) {
-            $img['width'] = (int) round($w);
-        }
-
-        // height
-        if ($h = $this->getAsset()->height()) {
-            $img['height'] = (int) round($h);
+        // width and height
+        if ($this->breakpoints->has('default')) {
+            // Use processed dimensions from default breakpoint
+            $defaultConfig = $this->breakpoints->get('default');
+            $parsed = $this->parseParam($defaultConfig);
+            
+            if (! empty($parsed['srcset'])) {
+                $img['width'] = (int) round($parsed['srcset']['width']);
+                $img['height'] = (int) round($parsed['srcset']['height']);
+            }
+        } else {
+            // Calculate dimensions based on smallestSrc width to match actual processed image
+            $originalWidth = $this->getAsset()->width();
+            $originalHeight = $this->getAsset()->height();
+            
+            if ($originalWidth && $originalHeight) {
+                $processedWidth = $this->smallestSrc();
+                $aspectRatio = $originalHeight / $originalWidth;
+                $processedHeight = $processedWidth * $aspectRatio;
+                
+                $img['width'] = $processedWidth;
+                $img['height'] = (int) round($processedHeight);
+            }
         }
 
         return $img;
@@ -427,6 +447,12 @@ class Picturesque
         // sizes
         if ($sourceData['sizes']) {
             $source['sizes'] = $sourceData['sizes'];
+        }
+
+        // width and height attributes
+        if (! empty($sourceData['srcset'])) {
+            $source['width'] = (int) round($sourceData['srcset']['width']);
+            $source['height'] = (int) round($sourceData['srcset']['height']);
         }
 
         return $source;
@@ -463,8 +489,6 @@ class Picturesque
 
     private function makeSrcset(array $sourceData, string $format, $glideOptions = []): string
     {
-        $sources = [];
-
         if (! array_key_exists('format', $glideOptions)) {
             $glideOptions['format'] = $format;
         }
@@ -473,75 +497,52 @@ class Picturesque
         if (! array_key_exists('fit', $glideOptions)) {
             $glideOptions['fit'] = config('picturesque.default_glide_fit');
         }
+        
+        $sources = [];
+        $source = $sourceData['srcset'];
 
-        foreach ($sourceData['srcset'] as $source) {
-            // with sizes
-            if ($sourceData['sizes']) {
-                $sources = array_merge($sources, collect(config('picturesque.size_multipliers'))
-                    ->map(function ($multiplier) use ($source) {
-                        return [
-                            'width' => ((float) $source['width']) * $multiplier,
-                            'height' => ((float) $source['height']) * $multiplier,
-                        ];
-                    })
-                    ->unique()
-                    ->transform(function ($sizes) use ($glideOptions) {
-                        $options = array_merge($glideOptions, $sizes);
-                        return "{$this->makeGlideUrl($options)} {$sizes['width']}w";
-                    })
-                    ->toArray()
-                );
-            }
-            // with dpr
-            else {
-                $sources = array_merge($sources, collect(config('picturesque.dpr'))
-                    ->mapWithKeys(function ($dpr) use ($source) {
-                        return [$dpr => [
-                            'width' => ((float) $source['width']) * $dpr,
-                            'height' => ((float) $source['height']) * $dpr,
-                        ]];
-                    })
-                    ->unique()
-                    ->transform(function ($sizes, $dpr) use ($glideOptions) {
-                        $options = array_merge($glideOptions, $sizes);
-                        
-                        return "{$this->makeGlideUrl($options)} {$dpr}x";
-                    })
-                    ->toArray()
-                );
-            }
+        // with sizes
+        if ($sourceData['sizes']) {
+            $sources = collect(config('picturesque.size_multipliers'))
+            ->map(function ($multiplier) use ($source) {
+                return [
+                    'width' => ((float) $source['width']) * $multiplier,
+                    'height' => ((float) $source['height']) * $multiplier,
+                ];
+            })
+            ->unique()
+            ->transform(function ($sizes) use ($glideOptions) {
+                $options = array_merge($glideOptions, $sizes);
+                
+                return "{$this->makeGlideUrl($options)} {$sizes['width']}w";
+            })
+            ->toArray();
+        }
+        // with dpr
+        else {
+            $sources = collect(config('picturesque.dpr'))
+            ->mapWithKeys(function ($dpr) use ($source) {
+                return [$dpr => [
+                    'width' => ((float) $source['width']) * $dpr,
+                    'height' => ((float) $source['height']) * $dpr,
+                ]];
+            })
+            ->unique()
+            ->transform(function ($sizes, $dpr) use ($glideOptions) {
+                $options = array_merge($glideOptions, $sizes);
+                
+                return "{$this->makeGlideUrl($options)} {$dpr}x";
+            })
+            ->toArray();
         }
 
         return implode(',', $sources);
     }
 
-    private function parseSingleSize(string $size, float|string $ratio = 'auto'): array
-    {
-        $size = trim($size);
-
-        if (strpos($size, 'x')) {
-            $size = explode('x', $size);
-
-            return [
-                'width' => $this->orientation === 'landscape' ? trim($size[0]) : trim($size[1]),
-                'height' => $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]),
-            ];
-        }
-
-        $ratio = is_float($ratio) ? ((float) $size) * $ratio : $ratio;
-
-        $result = [
-            'width' => $this->orientation === 'landscape' ? $size : $ratio,
-            'height' => $this->orientation === 'portrait' ? $size : $ratio,
-        ];
-
-        return $result;
-    }
-
     /**
      * Converts a size param string into a structured array.
      */
-    public function parseParam(string $data): array
+    private function parseParam(string $data): array
     {
         $result = [
             'srcset' => null,
@@ -570,21 +571,28 @@ class Picturesque
 
     /**
      * Converts a string with srcset information into a structured array.
-     * e.g. "300,600x200" -> [ ['width' => 300], ['width' => 600, 'height' => 200] ]
+     * e.g. "600x200" -> ['width' => 600, 'height' => 200]
      * Supports a $ratio option to calc height (if no explicit height supplied).
      */
     private function parseSizeData(string $sizeData, float|string $ratio = 'auto'): array
     {
-        if (strpos($sizeData, ',')) {
-            $sizes = [];
-            foreach (explode(',', $sizeData) as $size) {
-                $sizes[] = $this->parseSingleSize($size, $ratio);
-            }
-
-            return $sizes;
+        $size = trim($sizeData);
+        
+        if (strpos($size, 'x')) {
+            $size = explode('x', $size);
+        
+            return [
+                'width' => $this->orientation === 'landscape' ? trim($size[0]) : trim($size[1]),
+                'height' => $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]),
+            ];
         }
-
-        return [$this->parseSingleSize($sizeData, $ratio)];
+        
+        $calculatedValueOrRatio = is_float($ratio) ? ((float) $size) * $ratio : $ratio;
+        
+        return [
+            'width' => $this->orientation === 'landscape' ? $size : $calculatedValueOrRatio,
+            'height' => $this->orientation === 'portrait' ? $size : $calculatedValueOrRatio,
+        ];
     }
 
     /**
