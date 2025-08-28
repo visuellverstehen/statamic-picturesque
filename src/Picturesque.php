@@ -140,7 +140,10 @@ class Picturesque
         }
 
         $this->data['img'] = $this->makeImg();
-        $this->data['wrapperClass'] = $this->options['wrapperClass'] ?? '';
+        
+        if (! empty($this->options['wrapperClass'])) {
+            $this->data['wrapperClass'] = $this->options['wrapperClass'];
+        }
 
         return $this;
     }
