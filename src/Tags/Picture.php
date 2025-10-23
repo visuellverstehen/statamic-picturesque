@@ -62,7 +62,7 @@ class Picture extends Tags
 
         return $this->output($asset);
     }
-    
+
     protected function handleAltText(Picturesque &$picture)
     {
         // if no param is set, the asset will be checked for an alt text
@@ -70,7 +70,7 @@ class Picture extends Tags
             $picture->alt($alt);
         }
     }
-    
+
     protected function handleCssClasses(Picturesque &$picture)
     {
         if ($class = $this->params->get('class')) {
@@ -91,13 +91,12 @@ class Picture extends Tags
         if ($this->params->has('lazy')) {
             if ($this->params->get('lazy') == false) {
                 $picture->lazy(false);
-            }
-            else {
+            } else {
                 $picture->lazy(true);
             }
         }
     }
-    
+
     protected function handleWrapperCssClasses(Picturesque &$picture)
     {
         if ($wrapperClass = $this->params->get('wrapperClass')) {
@@ -134,7 +133,7 @@ class Picture extends Tags
 
             if (str_contains($filetypes, ',')) {
                 $filetypes = explode(',', $filetypes);
-            } else if (str_contains($filetypes, '|')) {
+            } elseif (str_contains($filetypes, '|')) {
                 $filetypes = explode('|', $filetypes);
             }
 
@@ -173,7 +172,7 @@ class Picture extends Tags
 
         $picture->generate();
 
-        if ($this->mode == 'json' || $this->mode == 'array' ) {
+        if ($this->mode == 'json' || $this->mode == 'array') {
             return $picture->json();
         }
 

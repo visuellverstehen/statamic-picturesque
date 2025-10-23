@@ -13,14 +13,23 @@ use Stringy\StaticStringy as Stringy;
 class Picturesque
 {
     private $asset;
+
     private $breakpoints;
+
     private $data;
+
     private $filetypes;
+
     private $glide;
+
     private $glideParams;
+
     private $glideSource;
+
     private $supportedFiletype;
+
     private $options;
+
     private $orientation;
 
     public function __construct(Asset|string $asset, ?Context $tagContext = null)
@@ -28,7 +37,7 @@ class Picturesque
         $this->asset = $asset;
 
         if (! $this->asset instanceof Asset && ! $this->asset = AssetFacade::find($asset)) {
-            throw new PicturesqueException('Invalid asset source: ' . (string) $asset);
+            throw new PicturesqueException('Invalid asset source: '.(string) $asset);
         }
 
         $this->breakpoints = collect();
@@ -49,7 +58,7 @@ class Picturesque
 
         $this->setupGlide($tagContext);
     }
-    
+
     public function alt(string $text): self
     {
         $this->options->put('alt', $text);
@@ -134,13 +143,13 @@ class Picturesque
             // non-breakpoint based image with `size` attribute
             if ($size = (string) $this->breakpoints->get('default')) {
                 foreach ($this->filetypes() as $filetype) {
-                    $this->data['sources']['default/' . $filetype] = $this->makeSource($this->parseParam($size), $filetype);
+                    $this->data['sources']['default/'.$filetype] = $this->makeSource($this->parseParam($size), $filetype);
                 }
             }
         }
 
         $this->data['img'] = $this->makeImg();
-        
+
         if (! empty($this->options['wrapperClass'])) {
             $this->data['wrapperClass'] = $this->options['wrapperClass'];
         }
@@ -153,18 +162,18 @@ class Picturesque
         // Filter out width/height parameters
         $restrictedParams = ['width', 'w', 'height', 'h'];
         $filteredParams = [];
-        
+
         foreach ($params as $key => $value) {
             if (! in_array($key, $restrictedParams)) {
                 $filteredParams[$key] = $value;
             }
         }
-        
+
         $this->glideParams = $filteredParams;
 
         return $this;
     }
-    
+
     public function getAsset(): Asset
     {
         return $this->asset;
@@ -204,14 +213,14 @@ class Picturesque
         $output .= empty($img['width']) ? '' : " width='{$img['width']}'";
         $output .= empty($img['height']) ? '' : " height='{$img['height']}'";
         $output .= empty($img['style']) ? '' : " style='{$img['style']}'";
-        $output .= ">";
+        $output .= '>';
 
         $output .= '</picture>';
 
         return $output;
     }
 
-    public function isGlideSupportedFiletype(): bool|null
+    public function isGlideSupportedFiletype(): ?bool
     {
         if (! $this->getAsset()) {
             return null;
@@ -278,22 +287,22 @@ class Picturesque
     private function evaluateFiletype(): string
     {
         $meta = $this->getAsset()->meta();
-        
-        if (! $meta || 
-            ! array_key_exists('mime_type', $meta) || 
-            ! is_string($meta['mime_type']) || 
+
+        if (! $meta ||
+            ! array_key_exists('mime_type', $meta) ||
+            ! is_string($meta['mime_type']) ||
             ! str_contains($meta['mime_type'], '/')
         ) {
             return null;
         }
-        
+
         $filetype = strtolower(explode('/', $meta['mime_type'])[1]);
 
         $this->supportedFiletype = in_array(
-            $filetype, 
+            $filetype,
             config('picturesque.supported_filetypes')
         );
-        
+
         return $filetype;
     }
 
@@ -368,12 +377,12 @@ class Picturesque
                 $this->glideParams,
                 ['width' => $this->smallestSrc()]
             );
-            
+
             // Only set default fit if not provided in custom params
             if (! array_key_exists('fit', $this->glideParams)) {
                 $params['fit'] = config('picturesque.default_glide_fit');
             }
-            
+
             $img['src'] = $this->makeGlideUrl($params);
         }
 
@@ -399,7 +408,7 @@ class Picturesque
             // Use processed dimensions from default breakpoint
             $defaultConfig = $this->breakpoints->get('default');
             $parsed = $this->parseParam($defaultConfig);
-            
+
             if (! empty($parsed['srcset'])) {
                 $img['width'] = (int) round($parsed['srcset']['width']);
                 $img['height'] = (int) round($parsed['srcset']['height']);
@@ -408,12 +417,12 @@ class Picturesque
             // Calculate dimensions based on smallestSrc width to match actual processed image
             $originalWidth = $this->getAsset()->width();
             $originalHeight = $this->getAsset()->height();
-            
+
             if ($originalWidth && $originalHeight) {
                 $processedWidth = $this->smallestSrc();
                 $aspectRatio = $originalHeight / $originalWidth;
                 $processedHeight = $processedWidth * $aspectRatio;
-                
+
                 $img['width'] = $processedWidth;
                 $img['height'] = (int) round($processedHeight);
             }
@@ -432,13 +441,13 @@ class Picturesque
 
         // type
         if (! in_array($format, config('picturesque.supported_filetypes'))) {
-            throw new PicturesqueException('Cannot create source for this filetype: ' . $format);
+            throw new PicturesqueException('Cannot create source for this filetype: '.$format);
         }
         $source['type'] = "image/{$format}";
 
         // media
         if ($breakpoint && array_key_exists($breakpoint, config('picturesque.breakpoints'))) {
-            $source['media'] = "(min-width: ".config('picturesque.breakpoints')[$breakpoint]."px)";
+            $source['media'] = '(min-width: '.config('picturesque.breakpoints')[$breakpoint].'px)';
         }
 
         // srcset
@@ -461,7 +470,7 @@ class Picturesque
     private function makeSourcesForBreakpoints(): array
     {
         return collect($this->filetypes())
-            ->map(function($filetype) {
+            ->map(function ($filetype) {
                 return collect(config('picturesque.breakpoints'))
                     ->sortDesc()
                     ->mapWithKeys(function ($px, $breakpoint) use ($filetype) {
@@ -497,43 +506,43 @@ class Picturesque
         if (! array_key_exists('fit', $glideOptions)) {
             $glideOptions['fit'] = config('picturesque.default_glide_fit');
         }
-        
+
         $sources = [];
         $source = $sourceData['srcset'];
 
         // with sizes
         if ($sourceData['sizes']) {
             $sources = collect(config('picturesque.size_multipliers'))
-            ->map(function ($multiplier) use ($source) {
-                return [
-                    'width' => ((float) $source['width']) * $multiplier,
-                    'height' => ((float) $source['height']) * $multiplier,
-                ];
-            })
-            ->unique()
-            ->transform(function ($sizes) use ($glideOptions) {
-                $options = array_merge($glideOptions, $sizes);
-                
-                return "{$this->makeGlideUrl($options)} {$sizes['width']}w";
-            })
-            ->toArray();
+                ->map(function ($multiplier) use ($source) {
+                    return [
+                        'width' => ((float) $source['width']) * $multiplier,
+                        'height' => ((float) $source['height']) * $multiplier,
+                    ];
+                })
+                ->unique()
+                ->transform(function ($sizes) use ($glideOptions) {
+                    $options = array_merge($glideOptions, $sizes);
+
+                    return "{$this->makeGlideUrl($options)} {$sizes['width']}w";
+                })
+                ->toArray();
         }
         // with dpr
         else {
             $sources = collect(config('picturesque.dpr'))
-            ->mapWithKeys(function ($dpr) use ($source) {
-                return [$dpr => [
-                    'width' => ((float) $source['width']) * $dpr,
-                    'height' => ((float) $source['height']) * $dpr,
-                ]];
-            })
-            ->unique()
-            ->transform(function ($sizes, $dpr) use ($glideOptions) {
-                $options = array_merge($glideOptions, $sizes);
-                
-                return "{$this->makeGlideUrl($options)} {$dpr}x";
-            })
-            ->toArray();
+                ->mapWithKeys(function ($dpr) use ($source) {
+                    return [$dpr => [
+                        'width' => ((float) $source['width']) * $dpr,
+                        'height' => ((float) $source['height']) * $dpr,
+                    ]];
+                })
+                ->unique()
+                ->transform(function ($sizes, $dpr) use ($glideOptions) {
+                    $options = array_merge($glideOptions, $sizes);
+
+                    return "{$this->makeGlideUrl($options)} {$dpr}x";
+                })
+                ->toArray();
         }
 
         return implode(',', $sources);
@@ -577,18 +586,18 @@ class Picturesque
     private function parseSizeData(string $sizeData, float|string $ratio = 'auto'): array
     {
         $size = trim($sizeData);
-        
+
         if (strpos($size, 'x')) {
             $size = explode('x', $size);
-        
+
             return [
                 'width' => $this->orientation === 'landscape' ? trim($size[0]) : trim($size[1]),
                 'height' => $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]),
             ];
         }
-        
+
         $calculatedValueOrRatio = is_float($ratio) ? ((float) $size) * $ratio : $ratio;
-        
+
         return [
             'width' => $this->orientation === 'landscape' ? $size : $calculatedValueOrRatio,
             'height' => $this->orientation === 'portrait' ? $size : $calculatedValueOrRatio,
@@ -605,10 +614,10 @@ class Picturesque
         $this->evaluateFiletype();
 
         if (! $context) {
-            $context = new Context();
+            $context = new Context;
         }
 
-        $this->glide = new Glide();
+        $this->glide = new Glide;
         $this->glide->method = 'index';
         $this->glide->tag = 'glide:index';
         $this->glide->isPair = false;
@@ -623,5 +632,4 @@ class Picturesque
     {
         return config('picturesque.min_width');
     }
-
 }
