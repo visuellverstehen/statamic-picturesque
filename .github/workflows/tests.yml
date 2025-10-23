@@ -12,7 +12,8 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [8.0, 8.1, 8.2, 8.3, 8.4]
+        php-version: [8.2, 8.3, 8.4]
+        statamic-version: ['^3.4', '^4.0', '^5.0', '^6.0']
 
     steps:
       - name: Checkout code
@@ -29,12 +30,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: vendor
-          key: composer-${{ matrix.php-version }}-${{ hashFiles('composer.lock') }}
+          key: composer-${{ matrix.php-version }}-${{ matrix.statamic-version }}-${{ hashFiles('composer.lock') }}
           restore-keys: |
-            composer-${{ matrix.php-version }}-
+            composer-${{ matrix.php-version }}-${{ matrix.statamic-version }}-
 
       - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: |
+          composer require statamic/cms:${{ matrix.statamic-version }} --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Run Pest tests
         run: ./vendor/bin/pest --ci --parallel
