@@ -9,6 +9,11 @@
             "VV\\Picturesque\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "visuellverstehen"
@@ -30,11 +35,16 @@
     },
     "require": {
         "php": "^8.0",
-        "statamic/cms": "^3.4 || ^4.0 || ^5.0 || ^6.0"
+        "statamic/cms": "^3.4 || ^4.0 || ^5.0 || ^6.0",
+        "orchestra/testbench": "^10.0"
     },
     "config": {
         "allow-plugins": {
-            "pixelfear/composer-dist-plugin": true
+            "pixelfear/composer-dist-plugin": true,
+            "pestphp/pest-plugin": true
         }
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.1"
     }
 }
