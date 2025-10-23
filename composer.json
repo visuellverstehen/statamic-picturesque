@@ -38,6 +38,8 @@
         "statamic/cms": "^5.0 || ^6.0"
     },
     "config": {
+        "minimum-stability": "alpha",
+        "prefer-stable": true,
         "allow-plugins": {
             "pixelfear/composer-dist-plugin": true,
             "pestphp/pest-plugin": true
