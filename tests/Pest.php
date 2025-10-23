@@ -45,34 +45,3 @@ expect()->extend('toBeOne', function () {
 | Custom Expectations
 |--------------------------------------------------------------------------
 */
-
-expect()->extend('toBeTrackedFor', function ($asset, $expectedCount = 1) {
-    // $this->value is the entry
-    $entry = $this->value;
-    $assetPath = $asset->path();
-    $assetContainer = 'assets';
-    $entryId = $entry->id();
-
-    // Check if a reference exists
-    $exists = \Illuminate\Support\Facades\DB::table('asset_atlas')
-        ->where('asset_path', $assetPath)
-        ->where('asset_container', $assetContainer)
-        ->where('item_id', $entryId)
-        ->exists();
-
-    expect($exists)->toBeTrue(
-        "Expected asset reference for '{$assetPath}' in entry '{$entryId}' to exist in asset_atlas table, but it was not found."
-    );
-
-    // Verify the expected count
-    $actualCount = \Illuminate\Support\Facades\DB::table('asset_atlas')
-        ->where('asset_path', $assetPath)
-        ->where('item_id', $entryId)
-        ->count();
-
-    expect($actualCount)->toBe($expectedCount,
-        "Expected {$expectedCount} reference(s) for asset '{$assetPath}' in entry '{$entryId}', but found {$actualCount}."
-    );
-
-    return $this; // Enable chaining
-});
