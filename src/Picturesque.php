@@ -595,9 +595,10 @@ class Picturesque
                 'height' => $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]),
             ];
         }
-        
+
+        $ratio = $ratio ?? (1 / $this->getAsset()->ratio());
         $calculatedValue = ((float) $size) * $ratio;
-        
+
         return [
             'width' => $this->orientation === 'landscape' ? $size : $calculatedValue,
             'height' => $this->orientation === 'portrait' ? $size : $calculatedValue,
