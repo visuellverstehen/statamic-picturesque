@@ -63,7 +63,7 @@ abstract class TestCase extends OrchestraTestCase
         // Now register assets with their meta
         $container = AssetContainer::findByHandle('test');
         foreach (static::$fixtures as $name => [$width, $height]) {
-            $asset = (new Asset)
+            $asset = (new Asset())
                 ->container($container)
                 ->path("{$name}.jpg");
 
