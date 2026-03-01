@@ -264,10 +264,10 @@ class Picturesque
         return $this;
     }
 
-    private function calcRatio(string $ratio): float|string
+    private function calcRatio(string $ratio): float
     {
-        if ($ratio == 'auto') {
-            return $ratio;
+        if ($ratio === 'auto') {
+            return 1 / $this->getAsset()->ratio();
         }
 
         if (strpos($ratio, ':')) {
@@ -583,7 +583,7 @@ class Picturesque
      * e.g. "600x200" -> ['width' => 600, 'height' => 200]
      * Supports a $ratio option to calc height (if no explicit height supplied).
      */
-    private function parseSizeData(string $sizeData, float|string $ratio = 'auto'): array
+    private function parseSizeData(string $sizeData, ?float $ratio = null): array
     {
         $size = trim($sizeData);
 
@@ -595,12 +595,12 @@ class Picturesque
                 'height' => $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]),
             ];
         }
-
-        $calculatedValueOrRatio = is_float($ratio) ? ((float) $size) * $ratio : $ratio;
-
+        
+        $calculatedValue = ((float) $size) * $ratio;
+        
         return [
-            'width' => $this->orientation === 'landscape' ? $size : $calculatedValueOrRatio,
-            'height' => $this->orientation === 'portrait' ? $size : $calculatedValueOrRatio,
+            'width' => $this->orientation === 'landscape' ? $size : $calculatedValue,
+            'height' => $this->orientation === 'portrait' ? $size : $calculatedValue,
         ];
     }
 
