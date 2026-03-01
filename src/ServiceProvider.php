@@ -15,11 +15,11 @@ class ServiceProvider extends AddonServiceProvider
     {
         parent::boot();
 
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'picturesque');
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'picturesque');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => config_path('picturesque.php'),
+                __DIR__ . '/../config/config.php' => config_path('picturesque.php'),
             ], 'picturesque');
         }
 

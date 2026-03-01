@@ -37,7 +37,7 @@ class Picturesque
         $this->asset = $asset;
 
         if (! $this->asset instanceof Asset && ! $this->asset = AssetFacade::find($asset)) {
-            throw new PicturesqueException('Invalid asset source: '.(string) $asset);
+            throw new PicturesqueException('Invalid asset source: ' . (string) $asset);
         }
 
         $this->breakpoints = collect();
@@ -143,7 +143,7 @@ class Picturesque
             // non-breakpoint based image with `size` attribute
             if ($size = (string) $this->breakpoints->get('default')) {
                 foreach ($this->filetypes() as $filetype) {
-                    $this->data['sources']['default/'.$filetype] = $this->makeSource($this->parseParam($size), $filetype);
+                    $this->data['sources']['default/' . $filetype] = $this->makeSource($this->parseParam($size), $filetype);
                 }
             }
         }
@@ -441,13 +441,13 @@ class Picturesque
 
         // type
         if (! in_array($format, config('picturesque.supported_filetypes'))) {
-            throw new PicturesqueException('Cannot create source for this filetype: '.$format);
+            throw new PicturesqueException('Cannot create source for this filetype: ' . $format);
         }
         $source['type'] = "image/{$format}";
 
         // media
         if ($breakpoint && array_key_exists($breakpoint, config('picturesque.breakpoints'))) {
-            $source['media'] = '(min-width: '.config('picturesque.breakpoints')[$breakpoint].'px)';
+            $source['media'] = '(min-width: ' . config('picturesque.breakpoints')[$breakpoint] . 'px)';
         }
 
         // srcset
@@ -614,10 +614,10 @@ class Picturesque
         $this->evaluateFiletype();
 
         if (! $context) {
-            $context = new Context;
+            $context = new Context();
         }
 
-        $this->glide = new Glide;
+        $this->glide = new Glide();
         $this->glide->method = 'index';
         $this->glide->tag = 'glide:index';
         $this->glide->isPair = false;
