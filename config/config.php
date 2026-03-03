@@ -1,7 +1,7 @@
 <?php
 
 return [
-    
+
     /*
     |--------------------------------------------------------------------------
     | Breakpoints
@@ -11,7 +11,7 @@ return [
     | Note that the `default` key is mandatory.
     |
     */
-    
+
     'breakpoints' => [
         'default' => 0,
         'sm' => 640,
@@ -20,20 +20,20 @@ return [
         'xl' => 1280,
         '2xl' => 1536,
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Size multipliers
     |--------------------------------------------------------------------------
     |
-    | Define in which multiples of the requested image size sources should be 
+    | Define in which multiples of the requested image size sources should be
     | generated. When using the default (1, 1.5, 2) and requesting an image in
     | 300px the tag generates sizes in 300px, 450px, 600px.
     |
     */
-    
+
     'size_multipliers' => [1, 1.5, 2],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Device pixel ratios
@@ -43,9 +43,9 @@ return [
     | `sizes` attribute. Use int or float values, e. g. for 2x => 2
     |
     */
-    
+
     'dpr' => [1, 2],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Supported filetypes
@@ -54,9 +54,9 @@ return [
     | Define the supported filetypes for image processing.
     |
     */
-    
+
     'supported_filetypes' => ['jpg', 'jpeg', 'png', 'webp'],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Default filetypes
@@ -65,9 +65,9 @@ return [
     | Define the default filetypes for generating sources.
     |
     */
-    
+
     'default_filetype' => ['webp'],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Default Glide fit
@@ -76,9 +76,9 @@ return [
     | Define the default fit mode for Glide image manipulation.
     |
     */
-    
+
     'default_glide_fit' => 'crop_focal',
-    
+
     /*
     |--------------------------------------------------------------------------
     | Minimum image width
@@ -87,9 +87,9 @@ return [
     | Defines the smallest width to use for image processing in px (int).
     |
     */
-    
+
     'min_width' => 300,
-    
+
     /*
     |--------------------------------------------------------------------------
     | Lazy loading default
@@ -99,19 +99,19 @@ return [
     | You can always overwrite it by setting `lazy='false'` in the tag.
     |
     */
-    
+
     'lazyloading' => true,
-    
+
     /*
     |--------------------------------------------------------------------------
     | Full stop in alt tags
     |--------------------------------------------------------------------------
     |
-    | Setting this to true ensures that the alt text always ends with a 
+    | Setting this to true ensures that the alt text always ends with a
     | full stop.
     |
     */
-    
+
     'alt_fullstop' => false,
-    
+
 ];
