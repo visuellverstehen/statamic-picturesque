@@ -14,7 +14,15 @@ abstract class TestCase extends AddonTestCase
 
     protected function setUp(): void
     {
+        // Statamic's AddonTestCase calls addToAssertionCount() with negative
+        // values to offset Mockery expectations. PHPUnit 11+ asserts $count >= 0,
+        // causing problems, so we temporarily disable PHP assertions.
+        $previousAssertions = ini_get('zend.assertions');
+        ini_set('zend.assertions', 0);
+
         parent::setUp();
+
+        ini_set('zend.assertions', $previousAssertions);
     }
 
     protected function resolveApplicationConfiguration($app)
