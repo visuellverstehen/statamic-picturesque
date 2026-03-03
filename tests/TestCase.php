@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use ReflectionClass;
 use Statamic\Assets\Asset;
-use Statamic\Extend\Manifest;
+
 use Statamic\Facades\AssetContainer;
 use Statamic\Facades\Blink;
 use Statamic\Providers\StatamicServiceProvider;
@@ -99,7 +99,12 @@ abstract class TestCase extends OrchestraTestCase
         $json = json_decode($app['files']->get($directory . '/../composer.json'), true);
         $statamic = $json['extra']['statamic'] ?? [];
 
-        $app->make(Manifest::class)->manifest = [
+        // Statamic v5 uses Statamic\Extend\Manifest, v6 moved it to Statamic\Addons\Manifest
+        $manifestClass = class_exists(\Statamic\Addons\Manifest::class)
+            ? \Statamic\Addons\Manifest::class
+            : \Statamic\Extend\Manifest::class;
+
+        $app->make($manifestClass)->manifest = [
             $json['name'] => [
                 'id' => $json['name'],
                 'slug' => $statamic['slug'] ?? null,
