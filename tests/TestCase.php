@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Storage;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use ReflectionClass;
 use Statamic\Assets\Asset;
-
 use Statamic\Facades\AssetContainer;
 use Statamic\Facades\Blink;
 use Statamic\Providers\StatamicServiceProvider;
