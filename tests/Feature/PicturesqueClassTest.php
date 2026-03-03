@@ -35,7 +35,7 @@ it('generates html with breakpoints', function () {
         ->toContain('2x');
 
     // Default breakpoint source has no media attribute
-    preg_match_all("/<source[^>]+>/", $html, $sources);
+    preg_match_all('/<source[^>]+>/', $html, $sources);
     $defaultSource = end($sources[0]);
     expect($defaultSource)->not->toContain('media=');
 });
