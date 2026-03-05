@@ -12,7 +12,7 @@
 */
 
 pest()->extend(Tests\TestCase::class)
-    ->in('Unit');
+    ->in('Unit', 'Feature');
 
 /*
 |--------------------------------------------------------------------------
@@ -45,3 +45,53 @@ expect()->extend('toBeOne', function () {
 | Custom Expectations
 |--------------------------------------------------------------------------
 */
+
+/**
+ * Assert that a query parameter (e.g. "blur=20") appears in both
+ * the <source> srcset URLs and the <img> src URL of a picture element.
+ */
+expect()->extend('toHaveGlideParam', function (string $param) {
+    $html = $this->value;
+
+    // Extract all srcset attribute values and decode HTML entities
+    preg_match_all("/srcset='([^']+)'/", $html, $srcsetMatches);
+    $srcsets = array_map('html_entity_decode', $srcsetMatches[1]);
+
+    // Extract the img src attribute value and decode HTML entities
+    preg_match("/<img[^>]+src='([^']+)'/", $html, $srcMatch);
+    $src = isset($srcMatch[1]) ? html_entity_decode($srcMatch[1]) : null;
+
+    expect($srcsets)->not->toBeEmpty();
+
+    foreach ($srcsets as $srcset) {
+        expect($srcset)->toContain($param);
+    }
+
+    expect($src)->not->toBeNull()->toContain($param);
+
+    return $this;
+});
+
+/**
+ * Assert that a query parameter does NOT appear in any
+ * <source> srcset URL or <img> src URL of a picture element.
+ */
+expect()->extend('notToHaveGlideParam', function (string $param) {
+    $html = $this->value;
+
+    preg_match_all("/srcset='([^']+)'/", $html, $srcsetMatches);
+    $srcsets = array_map('html_entity_decode', $srcsetMatches[1]);
+
+    preg_match("/<img[^>]+src='([^']+)'/", $html, $srcMatch);
+    $src = isset($srcMatch[1]) ? html_entity_decode($srcMatch[1]) : null;
+
+    foreach ($srcsets as $srcset) {
+        expect($srcset)->not->toContain($param);
+    }
+
+    if ($src) {
+        expect($src)->not->toContain($param);
+    }
+
+    return $this;
+});

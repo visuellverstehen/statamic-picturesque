@@ -264,7 +264,7 @@ class Picturesque
         return $this;
     }
 
-    private function calcRatio(string $ratio): float
+    public function calcRatio(string $ratio): float
     {
         if ($ratio === 'auto') {
             return 1 / $this->getAsset()->ratio();
@@ -551,7 +551,7 @@ class Picturesque
     /**
      * Converts a size param string into a structured array.
      */
-    private function parseParam(string $data): array
+    public function parseParam(string $data): array
     {
         $result = [
             'srcset' => null,
@@ -583,7 +583,7 @@ class Picturesque
      * e.g. "600x200" -> ['width' => 600, 'height' => 200]
      * Supports a $ratio option to calc height (if no explicit height supplied).
      */
-    private function parseSizeData(string $sizeData, ?float $ratio = null): array
+    public function parseSizeData(string $sizeData, ?float $ratio = null): array
     {
         $size = trim($sizeData);
 
