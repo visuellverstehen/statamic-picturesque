@@ -207,7 +207,7 @@ class Picturesque
         // img tag
         $img = $this->data['img'];
         $output .= "<img src='{$img['src']}'";
-        $output .= empty($img['alt']) ? '' : " alt='{$img['alt']}'";
+        $output .= sprintf(" alt='%s'", $img['alt'] ?: '');
         $output .= empty($img['class']) ? '' : " class='{$img['class']}'";
         $output .= empty($img['loading']) ? '' : " loading='{$img['loading']}'";
         $output .= empty($img['width']) ? '' : " width='{$img['width']}'";
