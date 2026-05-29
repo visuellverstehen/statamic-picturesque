@@ -4,11 +4,12 @@ namespace VV\Picturesque;
 
 use Statamic\Providers\AddonServiceProvider;
 use Statamic\Statamic;
+use VV\Picturesque\Tags\Picture;
 
 class ServiceProvider extends AddonServiceProvider
 {
     protected $tags = [
-        \VV\Picturesque\Tags\Picture::class,
+        Picture::class,
     ];
 
     public function bootAddon()
