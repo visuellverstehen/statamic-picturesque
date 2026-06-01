@@ -198,3 +198,11 @@ it('supports spaces in attribute values', function () {
         ->toContain("sizes='80vw'")
         ->toContain('(min-width: 768px)');
 });
+
+it('renders an empty alt attribute when no alt text is provided', function () {
+    $html = antlers($this->antlers, '{{ picture:img size="300x200" }}', [
+        'img' => $this->assets['landscape'],
+    ]);
+
+    expect($html)->toContain("alt=''");
+});

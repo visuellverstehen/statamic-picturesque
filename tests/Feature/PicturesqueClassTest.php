@@ -1,5 +1,6 @@
 <?php
 
+use Statamic\Assets\Asset;
 use VV\Picturesque\Picturesque;
 use VV\Picturesque\PicturesqueException;
 
@@ -356,7 +357,7 @@ it('returns data array via data method', function () {
 it('exposes the asset via getAsset', function () {
     $picture = $this->picturesque('landscape');
 
-    expect($picture->getAsset())->toBeInstanceOf(\Statamic\Assets\Asset::class);
+    expect($picture->getAsset())->toBeInstanceOf(Asset::class);
 });
 
 it('accepts an asset object directly', function () {

@@ -118,3 +118,13 @@ it('includes width and height in json img for explicit dimensions', function () 
     expect($data['img']['width'])->toBe(400)
         ->and($data['img']['height'])->toBe(250);
 });
+
+it('includes an empty alt attribute in json img when no alt text is provided', function () {
+    $data = parseJson($this->antlers, '{{ picture:json :src="img" size="300x200" }}', [
+        'img' => $this->assets['landscape'],
+    ]);
+
+    expect($data['img'])
+        ->toHaveKey('alt')
+        ->and($data['img']['alt'])->toBe('');
+});

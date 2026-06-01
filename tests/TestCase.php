@@ -5,6 +5,7 @@ namespace Tests;
 use Illuminate\Support\Facades\Storage;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use ReflectionClass;
+use Statamic\Addons\Manifest;
 use Statamic\Assets\Asset;
 use Statamic\Facades\AssetContainer;
 use Statamic\Facades\Blink;
@@ -99,8 +100,8 @@ abstract class TestCase extends OrchestraTestCase
         $statamic = $json['extra']['statamic'] ?? [];
 
         // Statamic v5 uses Statamic\Extend\Manifest, v6 moved it to Statamic\Addons\Manifest
-        $manifestClass = class_exists(\Statamic\Addons\Manifest::class)
-            ? \Statamic\Addons\Manifest::class
+        $manifestClass = class_exists(Manifest::class)
+            ? Manifest::class
             : \Statamic\Extend\Manifest::class;
 
         $app->make($manifestClass)->manifest = [
