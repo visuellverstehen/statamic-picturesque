@@ -2,9 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1](https://github.com/visuellverstehen/statamic-picturesque/compare/v2.1.0...2.1.1) - 2026-06-01
+
+### What's Changed
+
+* fix: alt attribute by @webmalocher in https://github.com/visuellverstehen/statamic-picturesque/pull/32
+* fix: throw a dedicated error for non-numeric size values (#31) by @simonerd in https://github.com/visuellverstehen/statamic-picturesque/pull/33
+
+### New Contributors
+
+* @webmalocher made their first contribution in https://github.com/visuellverstehen/statamic-picturesque/pull/32
+
+**Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/v2.1.0...2.1.1
+
 ## [v2.1.0](https://github.com/visuellverstehen/statamic-picturesque/compare/v2.0.1...v2.1.0) - 2026-03-05
 
 ## What's Changed
+
 * feat: Statamic v6 support by @el-schneider in https://github.com/visuellverstehen/statamic-picturesque/pull/26
 * Add unit and feature tests by @simonerd in https://github.com/visuellverstehen/statamic-picturesque/pull/30
 
@@ -13,6 +27,7 @@ All notable changes to this project will be documented in this file.
 ## [v2.0.1](https://github.com/visuellverstehen/statamic-picturesque/compare/v2.0.0...v2.0.1) - 2025-12-04
 
 ## What's Fixed
+
 * fix: correct auto-ratio calculation in size data parsing by @el-schneider in https://github.com/visuellverstehen/statamic-picturesque/pull/28
 
 **Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/v2.0.0...v2.0.1
@@ -20,22 +35,26 @@ All notable changes to this project will be documented in this file.
 ## [v2.0.0](https://github.com/visuellverstehen/statamic-picturesque/compare/v1.5.0...v2.0.0) - 2025-08-28
 
 ## What's New
+
 * Add `width` and `height` attributes to img and sources by @el-schneider in https://github.com/visuellverstehen/statamic-picturesque/pull/23
 
-_As these changes will produce a slightly different rendered output and that could potentially (depending on how Picturesque is used) result in a broken layout, we decided to publish this as a major release._
+*As these changes will produce a slightly different rendered output and that could potentially (depending on how Picturesque is used) result in a broken layout, we decided to publish this as a major release.*
 
 **Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/v1.5.0...v2.0.0
 
 ## [v1.5.0](https://github.com/visuellverstehen/statamic-picturesque/compare/v1.4.7...v1.5.0) - 2025-08-28
 
 ## What's new
+
 * Add support for Glide parameters by @el-schneider in https://github.com/visuellverstehen/statamic-picturesque/pull/22
 * Add config for default glide_fit parameter by @simonerd in https://github.com/visuellverstehen/statamic-picturesque/pull/25
 
 ## What's fixed
+
 * Remove composer.lock by @florianbrinkmann in https://github.com/visuellverstehen/statamic-picturesque/pull/20
 
 ## New Contributors
+
 * @el-schneider made their first contribution in https://github.com/visuellverstehen/statamic-picturesque/pull/22
 
 **Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/v1.4.7...v1.5.0
@@ -43,6 +62,7 @@ _As these changes will produce a slightly different rendered output and that cou
 ## [v1.4.7](https://github.com/visuellverstehen/statamic-picturesque/compare/v1.4.6...v1.4.7) - 2024-10-08
 
 ## What's Changed
+
 * feat: pass inline styles by @juliawarnke in https://github.com/visuellverstehen/statamic-picturesque/pull/19
 
 **Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/v1.4.6...v1.4.7
@@ -50,9 +70,11 @@ _As these changes will produce a slightly different rendered output and that cou
 ## [v1.4.6](https://github.com/visuellverstehen/statamic-picturesque/compare/v1.4.5...v1.4.6) - 2024-05-17
 
 ## What's Changed
+
 * Add support for Statamic 5 by @doriengr in https://github.com/visuellverstehen/statamic-picturesque/pull/18
 
 ## New Contributors
+
 * @doriengr made their first contribution in https://github.com/visuellverstehen/statamic-picturesque/pull/18
 
 **Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/v1.4.5...v1.4.6
@@ -60,6 +82,7 @@ _As these changes will produce a slightly different rendered output and that cou
 ## [v1.4.5](https://github.com/visuellverstehen/statamic-picturesque/compare/v1.4.4...v1.4.5) - 2024-03-04
 
 ## What's Changed
+
 * Provide getAsset method by @juliawarnke in https://github.com/visuellverstehen/statamic-picturesque/pull/15
 
 **Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/v1.4.4...v1.4.5
@@ -83,6 +106,7 @@ _As these changes will produce a slightly different rendered output and that cou
 ## [v1.4.2](https://github.com/visuellverstehen/statamic-picturesque/compare/v1.4.1...v1.4.2) - 2024-02-06
 
 ## What's Changed
+
 * Remove trailing slash for void elements by @juliawarnke in https://github.com/visuellverstehen/statamic-picturesque/pull/9
 * Provide integers for height and width attribute in image tag by @juliawarnke in https://github.com/visuellverstehen/statamic-picturesque/pull/10
 
@@ -117,9 +141,11 @@ The readme was updated with instructions for both changes.
 ## [v1.2.1](https://github.com/visuellverstehen/statamic-picturesque/compare/v1.2.0...v1.2.1) - 2023-05-30
 
 ## What's Changed
+
 * chore: make sure provided data is already of type asset by @juliawarnke in https://github.com/visuellverstehen/statamic-picturesque/pull/2
 
 ## New Contributors
+
 * @juliawarnke made their first contribution in https://github.com/visuellverstehen/statamic-picturesque/pull/2
 
 **Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/v.1.2.0...v1.2.1
@@ -127,12 +153,15 @@ The readme was updated with instructions for both changes.
 ## [v1.2.0](https://github.com/visuellverstehen/statamic-picturesque/compare/v1.1.0...v1.2.0) - 2023-05-24
 
 ## What's new?
+
 * Added a new config option `alt_fullstop` (bool, default `false`) to ensure alt texts end with a full stop
 
 ## What's changed?
+
 * fix: use correct `asset` property instead of `sourceAsset` in case of filetype without glide support by @florianbrinkmann in https://github.com/visuellverstehen/statamic-picturesque/pull/1
 
 ## New contributors
+
 * @florianbrinkmann made their first contribution in https://github.com/visuellverstehen/statamic-picturesque/pull/1
 
 **Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/v1.1.0...v.1.2.0
@@ -168,9 +197,11 @@ In addition to using Picturesque as an Antlers tag, you can now also use the bas
 ## [v0.2.0-beta](https://github.com/visuellverstehen/statamic-picturesque/compare/v0.1.1-beta...v0.2.0-beta) - 2023-03-14
 
 ### What's new
+
 - Add config for lazy loading and smallest generated image width
 
 ### What's improved
+
 - Make sure glide urls are not generated more often than necessary
 - Clarify details and fix spelling in readme
 
