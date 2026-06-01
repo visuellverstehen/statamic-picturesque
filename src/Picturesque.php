@@ -590,15 +590,15 @@ class Picturesque
         if (strpos($size, 'x')) {
             $size = explode('x', $size);
 
-            $width = trim($size[0]);
-            $height = trim($size[1]);
+            $width = $this->orientation === 'landscape' ? trim($size[0]) : trim($size[1]);
+            $height = $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]);
 
             $this->ensureNumericSize($width, $sizeData);
             $this->ensureNumericSize($height, $sizeData);
 
             return [
-                'width' => $this->orientation === 'landscape' ? $width : $height,
-                'height' => $this->orientation === 'portrait' ? $width : $height,
+                'width' => $width,
+                'height' => $height,
             ];
         }
 
