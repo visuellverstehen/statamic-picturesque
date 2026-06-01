@@ -1,5 +1,7 @@
 <?php
 
+use VV\Picturesque\PicturesqueException;
+
 it('parses explicit width x height in landscape mode', function () {
     $result = $this->picturesque('landscape')->parseSizeData('600x200');
 
@@ -59,3 +61,11 @@ it('does not crash when ratio is null', function () {
     expect($result['width'])->toBe('300')
         ->and($result['height'])->toBeGreaterThan(0);
 });
+
+it('throws a helpful error for a comma in the width attribute', function () {
+    $this->picturesque('landscape')->parseSizeData('300,600');
+})->throws(PicturesqueException::class, 'Commas are not supported');
+
+it('throws a helpful error for non-numeric width x height', function () {
+    $this->picturesque('landscape')->parseSizeData('foox200');
+})->throws(PicturesqueException::class, 'must be numeric');

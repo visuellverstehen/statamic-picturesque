@@ -590,11 +590,19 @@ class Picturesque
         if (strpos($size, 'x')) {
             $size = explode('x', $size);
 
+            $width = trim($size[0]);
+            $height = trim($size[1]);
+
+            $this->ensureNumericSize($width, $sizeData);
+            $this->ensureNumericSize($height, $sizeData);
+
             return [
-                'width' => $this->orientation === 'landscape' ? trim($size[0]) : trim($size[1]),
-                'height' => $this->orientation === 'portrait' ? trim($size[0]) : trim($size[1]),
+                'width' => $this->orientation === 'landscape' ? $width : $height,
+                'height' => $this->orientation === 'portrait' ? $width : $height,
             ];
         }
+
+        $this->ensureNumericSize($size, $sizeData);
 
         $ratio = $ratio ?? (1 / $this->getAsset()->ratio());
         $calculatedValue = ((float) $size) * $ratio;
@@ -603,6 +611,19 @@ class Picturesque
             'width' => $this->orientation === 'landscape' ? $size : $calculatedValue,
             'height' => $this->orientation === 'portrait' ? $size : $calculatedValue,
         ];
+    }
+
+    private function ensureNumericSize(string $value, string $original): void
+    {
+        if (is_numeric($value)) {
+            return;
+        }
+
+        throw new PicturesqueException(
+            "Invalid size value \"{$original}\": width and height must be numeric. "
+            . 'Use a single width ("300"), explicit dimensions ("300x200") '
+            . 'or width with ratio ("300|1.5:1"). Commas are not supported in the size value.'
+        );
     }
 
     /**
