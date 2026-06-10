@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.2.0](https://github.com/visuellverstehen/statamic-picturesque/compare/2.1.1...v2.2.0) - 2026-06-10
+
+### What's Changed
+
+* Bring back comma-separated sources by @simonerd in https://github.com/visuellverstehen/statamic-picturesque/pull/34
+
+**Full Changelog**: https://github.com/visuellverstehen/statamic-picturesque/compare/2.1.1...v2.2.0
+
 ## [2.1.1](https://github.com/visuellverstehen/statamic-picturesque/compare/v2.1.0...2.1.1) - 2026-06-01
 
 ### What's Changed
