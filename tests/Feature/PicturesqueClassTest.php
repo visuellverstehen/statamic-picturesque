@@ -315,6 +315,54 @@ it('generates w descriptors when sizes are specified', function () {
         ->not->toContain('1x');
 });
 
+it('generates srcset entries for comma-separated widths', function () {
+    $html = $this->picturesque('landscape')
+        ->default('300,600 | 2:1 | 100vw')
+        ->generate()
+        ->html();
+
+    // Multipliers (1, 1.5, 2) per width, deduplicated by descriptor:
+    // 300 -> 300w, 450w, 600w; 600 -> 600w (duplicate), 900w, 1200w
+    expect($html)
+        ->toContain('300w')
+        ->toContain('450w')
+        ->toContain('600w')
+        ->toContain('900w')
+        ->toContain('1200w')
+        ->toContain("sizes='100vw'");
+
+    // duplicate 600w descriptor is removed
+    preg_match("/srcset='([^']+)'/", $html, $match);
+    expect(substr_count($match[1], ' 600w'))->toBe(1);
+
+    // width/height attributes use the first (primary) source
+    expect($html)
+        ->toContain("width='300'")
+        ->toContain("height='150'");
+});
+
+it('supports comma-separated widths in breakpoints', function () {
+    $html = $this->picturesque('landscape')
+        ->default('300,600 | auto | 100vw')
+        ->breakpoint('md', '600,1200 | auto | 80vw')
+        ->generate()
+        ->html();
+
+    expect($html)
+        ->toContain('(min-width: 768px)')
+        ->toContain("sizes='100vw'")
+        ->toContain("sizes='80vw'")
+        ->toContain('300w')
+        ->toContain('1200w')
+        ->toContain('2400w');
+});
+
+it('throws when comma-separated widths are used without sizes', function () {
+    $this->picturesque('landscape')
+        ->default('300,600')
+        ->generate();
+})->throws(PicturesqueException::class, 'require a sizes value');
+
 it('can chain all options fluently', function () {
     $html = $this->picturesque('landscape')
         ->default('300|1.5:1|100vw')
