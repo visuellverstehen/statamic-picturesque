@@ -598,7 +598,7 @@ class Picturesque
 
     /**
      * Converts a string with srcset information into a structured array of sources.
-     * e.g. "300,600x200" -> [['width' => 300, ...], ['width' => 600, 'height' => 200]]
+     * e.g. "300,600" with ratio 0.5 -> [['width' => 300, 'height' => 150], ['width' => 600, 'height' => 300]]
      * Supports a $ratio option to calc height (if no explicit height supplied).
      */
     public function parseSizeData(string $sizeData, ?float $ratio = null): array
