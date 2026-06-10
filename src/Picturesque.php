@@ -603,7 +603,23 @@ class Picturesque
      */
     public function parseSizeData(string $sizeData, ?float $ratio = null): array
     {
-        return collect(explode(',', $sizeData))
+        $sizes = explode(',', $sizeData);
+
+        // All candidates of a srcset must share the same aspect ratio,
+        // so explicit WIDTHxHEIGHT values are not allowed in comma-separated lists.
+        if (count($sizes) > 1) {
+            foreach ($sizes as $size) {
+                if (strpos(trim($size), 'x')) {
+                    throw new PicturesqueException(
+                        "Invalid size value \"{$sizeData}\": explicit WIDTHxHEIGHT is not supported in comma-separated lists "
+                        . 'because all srcset candidates must share the same aspect ratio. '
+                        . 'Use the ratio segment instead, e.g. "300,600 | 3:1 | 100vw".'
+                    );
+                }
+            }
+        }
+
+        return collect($sizes)
             ->map(fn ($size) => $this->parseSingleSize($size, $ratio))
             ->toArray();
     }

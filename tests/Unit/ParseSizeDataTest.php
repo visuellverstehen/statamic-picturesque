@@ -76,34 +76,21 @@ it('parses comma-separated widths into multiple sources', function () {
         ->and($result[1]['height'])->toBe(300.0);
 });
 
-it('parses mixed comma-separated sizes with explicit dimensions', function () {
-    $result = $this->picturesque('landscape')->parseSizeData('300,600x200', 0.5);
-
-    expect($result)->toHaveCount(2)
-        ->and($result[0]['width'])->toBe('300')
-        ->and($result[0]['height'])->toBe(150.0)
-        ->and($result[1])->toBe([
-            'width' => '600',
-            'height' => '200',
-        ]);
-});
-
 it('parses comma-separated sizes in portrait mode', function () {
     $result = $this->picturesque('landscape')
         ->orientation('portrait')
-        ->parseSizeData('600x200,800x400');
+        ->parseSizeData('300,600', 0.5);
 
-    expect($result)->toBe([
-        [
-            'width' => '200',
-            'height' => '600',
-        ],
-        [
-            'width' => '400',
-            'height' => '800',
-        ],
-    ]);
+    expect($result)->toHaveCount(2)
+        ->and($result[0]['width'])->toBe(150.0)
+        ->and($result[0]['height'])->toBe('300')
+        ->and($result[1]['width'])->toBe(300.0)
+        ->and($result[1]['height'])->toBe('600');
 });
+
+it('throws when explicit dimensions are used in comma-separated lists', function () {
+    $this->picturesque('landscape')->parseSizeData('300,600x200', 0.5);
+})->throws(PicturesqueException::class, 'not supported in comma-separated lists');
 
 it('throws a helpful error for non-numeric width x height', function () {
     $this->picturesque('landscape')->parseSizeData('foox200');

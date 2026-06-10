@@ -130,13 +130,10 @@ The tag supports ratios as `1.5:1` or `1.5/1`, so use whichever way you prefer.
 
 #### Multiple source widths
 
-Instead of relying on the configured size multipliers you can explicitly define multiple widths for a single source by separating them with commas:  
-`{{ picture:img size="300,600,900 | auto | 100vw" }}`  
+Instead of relying solely on the configured size multipliers you can explicitly define multiple widths for a single source by separating them with commas:  
+`{{ picture:img size="300,600,900 | 1.5:1 | 100vw" }}`  
 
-Each width becomes its own srcset candidate (multiplied by the configured `size_multipliers`, with duplicate entries removed). You can also mix single widths with explicit dimensions:  
-`{{ picture:img size="300,600x200 | auto | 100vw" }}`  
-
-Results in:
+Each width becomes its own srcset candidate (still multiplied by the configured `size_multipliers`, with duplicate entries removed). Results in:
 
 ```HTML
 <picture>
@@ -155,7 +152,8 @@ Results in:
 
 Please note:
 - Comma-separated widths **require a `sizes` value** (the third pipe segment). Without it the browser would receive multiple sources with identical DPR descriptors, so Picturesque throws an error instead.
-- The first value is used for the `width`/`height` attributes of the generated elements.
+- All candidates of a source share **one aspect ratio** (the second pipe segment, or `auto`). A srcset must contain the same image at different resolutions, so explicit `WIDTHxHEIGHT` values are not allowed in comma-separated lists. Use the ratio segment instead: `300,600 | 3:1 | 100vw` rather than `300x100,600x200`.
+- The first value is used for the `width` and `height` attributes of the generated elements.
 - This works for breakpoint attributes as well: `{{ picture:img default="300,600 | auto | 100vw" md="600,1200 | auto | 80vw" }}`
 
 #### Format/filetypes
@@ -293,4 +291,3 @@ The addon provides several configuration options through it's `config/picturesqu
 
 ## License
 The MIT license (MIT). Please take a look at the [license file](LICENSE.md) for more information.
-
