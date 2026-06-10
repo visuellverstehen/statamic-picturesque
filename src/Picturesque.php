@@ -409,9 +409,9 @@ class Picturesque
             $defaultConfig = $this->breakpoints->get('default');
             $parsed = $this->parseParam($defaultConfig);
 
-            if (! empty($parsed['srcset'])) {
-                $img['width'] = (int) round($parsed['srcset']['width']);
-                $img['height'] = (int) round($parsed['srcset']['height']);
+            if (isset($parsed['srcset'][0])) {
+                $img['width'] = (int) round($parsed['srcset'][0]['width']);
+                $img['height'] = (int) round($parsed['srcset'][0]['height']);
             }
         } else {
             // Calculate dimensions based on smallestSrc width to match actual processed image
@@ -459,9 +459,10 @@ class Picturesque
         }
 
         // width and height attributes
-        if (! empty($sourceData['srcset'])) {
-            $source['width'] = (int) round($sourceData['srcset']['width']);
-            $source['height'] = (int) round($sourceData['srcset']['height']);
+        // Use the primary (first) source for the attributes
+        if (isset($sourceData['srcset'][0])) {
+            $source['width'] = (int) round($sourceData['srcset'][0]['width']);
+            $source['height'] = (int) round($sourceData['srcset'][0]['height']);
         }
 
         return $source;
@@ -508,44 +509,56 @@ class Picturesque
         }
 
         $sources = [];
-        $source = $sourceData['srcset'];
 
-        // with sizes
-        if ($sourceData['sizes']) {
-            $sources = collect(config('picturesque.size_multipliers'))
-                ->map(function ($multiplier) use ($source) {
-                    return [
-                        'width' => ((float) $source['width']) * $multiplier,
-                        'height' => ((float) $source['height']) * $multiplier,
-                    ];
-                })
-                ->unique()
-                ->transform(function ($sizes) use ($glideOptions) {
-                    $options = array_merge($glideOptions, $sizes);
+        foreach ($sourceData['srcset'] as $source) {
+            // with sizes
+            if ($sourceData['sizes']) {
+                $sources = array_merge(
+                    $sources,
+                    collect(config('picturesque.size_multipliers'))
+                        ->map(function ($multiplier) use ($source) {
+                            return [
+                                'width' => ((float) $source['width']) * $multiplier,
+                                'height' => ((float) $source['height']) * $multiplier,
+                            ];
+                        })
+                        ->unique()
+                        ->transform(function ($sizes) use ($glideOptions) {
+                            $options = array_merge($glideOptions, $sizes);
 
-                    return "{$this->makeGlideUrl($options)} {$sizes['width']}w";
-                })
-                ->toArray();
+                            return "{$this->makeGlideUrl($options)} {$sizes['width']}w";
+                        })
+                        ->toArray()
+                );
+            }
+            // with dpr
+            else {
+                $sources = array_merge(
+                    $sources,
+                    collect(config('picturesque.dpr'))
+                        ->mapWithKeys(function ($dpr) use ($source) {
+                            return [$dpr => [
+                                'width' => ((float) $source['width']) * $dpr,
+                                'height' => ((float) $source['height']) * $dpr,
+                            ]];
+                        })
+                        ->unique()
+                        ->transform(function ($sizes, $dpr) use ($glideOptions) {
+                            $options = array_merge($glideOptions, $sizes);
+
+                            return "{$this->makeGlideUrl($options)} {$dpr}x";
+                        })
+                        ->values()
+                        ->toArray()
+                );
+            }
         }
-        // with dpr
-        else {
-            $sources = collect(config('picturesque.dpr'))
-                ->mapWithKeys(function ($dpr) use ($source) {
-                    return [$dpr => [
-                        'width' => ((float) $source['width']) * $dpr,
-                        'height' => ((float) $source['height']) * $dpr,
-                    ]];
-                })
-                ->unique()
-                ->transform(function ($sizes, $dpr) use ($glideOptions) {
-                    $options = array_merge($glideOptions, $sizes);
 
-                    return "{$this->makeGlideUrl($options)} {$dpr}x";
-                })
-                ->toArray();
-        }
-
-        return implode(',', $sources);
+        // remove duplicate descriptors
+        // (e. g. "300,600" with multipliers 1 and 2 both produce a 600w source)
+        return collect($sources)
+            ->unique(fn ($entry) => substr($entry, strrpos($entry, ' ') + 1))
+            ->implode(',');
     }
 
     /**
@@ -560,30 +573,42 @@ class Picturesque
 
         if (! strpos($data, '|')) {
             $result['srcset'] = $this->parseSizeData(trim($data));
+        } else {
+            $parts = explode('|', $data);
 
-            return $result;
+            $result['srcset'] = $this->parseSizeData(
+                trim($parts[0]),
+                $this->calcRatio(trim($parts[1]))
+            );
+
+            if (count($parts) > 2) {
+                $result['sizes'] = trim($parts[2]);
+            }
         }
 
-        $data = explode('|', $data);
-
-        $result['srcset'] = $this->parseSizeData(
-            trim($data[0]),
-            $this->calcRatio(trim($data[1]))
-        );
-
-        if (count($data) > 2) {
-            $result['sizes'] = trim($data[2]);
+        if (count($result['srcset']) > 1 && empty($result['sizes'])) {
+            throw new PicturesqueException(
+                "Invalid size value \"{$data}\": multiple comma-separated widths require a sizes value, "
+                . 'e.g. "300,600 | auto | 100vw".'
+            );
         }
 
         return $result;
     }
 
     /**
-     * Converts a string with srcset information into a structured array.
-     * e.g. "600x200" -> ['width' => 600, 'height' => 200]
+     * Converts a string with srcset information into a structured array of sources.
+     * e.g. "300,600x200" -> [['width' => 300, ...], ['width' => 600, 'height' => 200]]
      * Supports a $ratio option to calc height (if no explicit height supplied).
      */
     public function parseSizeData(string $sizeData, ?float $ratio = null): array
+    {
+        return collect(explode(',', $sizeData))
+            ->map(fn ($size) => $this->parseSingleSize($size, $ratio))
+            ->toArray();
+    }
+
+    private function parseSingleSize(string $sizeData, ?float $ratio = null): array
     {
         $size = trim($sizeData);
 
@@ -621,8 +646,8 @@ class Picturesque
 
         throw new PicturesqueException(
             "Invalid size value \"{$original}\": width and height must be numeric. "
-            . 'Use a single width ("300"), explicit dimensions ("300x200") '
-            . 'or width with ratio ("300|1.5:1"). Commas are not supported in the size value.'
+            . 'Use a single width ("300"), explicit dimensions ("300x200"), '
+            . 'width with ratio ("300|1.5:1") or comma-separated widths ("300,600 | auto | 100vw").'
         );
     }
 
