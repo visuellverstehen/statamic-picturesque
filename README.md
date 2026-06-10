@@ -128,6 +128,36 @@ If you want to use `width x height` as well as the `sizes` attribute, simply use
 
 The tag supports ratios as `1.5:1` or `1.5/1`, so use whichever way you prefer.
 
+#### Multiple source widths
+
+Instead of relying on the configured size multipliers you can explicitly define multiple widths for a single source by separating them with commas:  
+`{{ picture:img size="300,600,900 | auto | 100vw" }}`  
+
+Each width becomes its own srcset candidate (multiplied by the configured `size_multipliers`, with duplicate entries removed). You can also mix single widths with explicit dimensions:  
+`{{ picture:img size="300,600x200 | auto | 100vw" }}`  
+
+Results in:
+
+```HTML
+<picture>
+    <source type="image/webp" srcset="
+        [img-url]?fm=webp&amp;fit=crop&amp;w=300&amp;h=200&amp;s=[…] 300w,
+        [img-url]?fm=webp&amp;fit=crop&amp;w=450&amp;h=300&amp;s=[…] 450w,
+        [img-url]?fm=webp&amp;fit=crop&amp;w=600&amp;h=400&amp;s=[…] 600w,
+        [img-url]?fm=webp&amp;fit=crop&amp;w=900&amp;h=600&amp;s=[…] 900w,
+        [img-url]?fm=webp&amp;fit=crop&amp;w=1200&amp;h=800&amp;s=[…] 1200w,
+        [img-url]?fm=webp&amp;fit=crop&amp;w=1350&amp;h=900&amp;s=[…] 1350w,
+        [img-url]?fm=webp&amp;fit=crop&amp;w=1800&amp;h=1200&amp;s=[…] 1800w
+    " sizes="100vw" width="300" height="200">
+    <img src="[img-url]?w=300&amp;fit=crop&amp;s=[…]" loading="lazy" width="300" height="200">
+</picture>
+```
+
+Please note:
+- Comma-separated widths **require a `sizes` value** (the third pipe segment). Without it the browser would receive multiple sources with identical DPR descriptors, so Picturesque throws an error instead.
+- The first value is used for the `width`/`height` attributes of the generated elements.
+- This works for breakpoint attributes as well: `{{ picture:img default="300,600 | auto | 100vw" md="600,1200 | auto | 80vw" }}`
+
 #### Format/filetypes
 
 You can optionally add one or more filetypes for image conversion:  
